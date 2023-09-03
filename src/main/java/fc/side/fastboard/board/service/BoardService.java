@@ -16,46 +16,46 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BoardService {
 
-    private final BoardRepository boardRepository;
+  private final BoardRepository boardRepository;
 
-    @Transactional
-    public List<BoardDetailDTO> getAllBoardDetails() {
-        return boardRepository.findAll().stream()
-                .map(BoardDetailDTO::fromEntity).collect(Collectors.toList());
-    }
+  @Transactional
+  public List<BoardDetailDTO> getAllBoardDetails() {
+    return boardRepository.findAll().stream()
+        .map(BoardDetailDTO::fromEntity).collect(Collectors.toList());
+  }
 
-    @Transactional
-    public BoardDetailDTO getBoardDetail(int id) {
-        return BoardDetailDTO.fromEntity(findBoardById(id));
-    }
+  @Transactional
+  public BoardDetailDTO getBoardDetail(int id) {
+    return BoardDetailDTO.fromEntity(findBoardById(id));
+  }
 
-    @Transactional
-    public CreateBoard.Response createBoard(CreateBoard.Request request) {
+  @Transactional
+  public CreateBoard.Response createBoard(CreateBoard.Request request) {
 
-        return CreateBoard.Response.fromEntity(
-                boardRepository.save(CreateBoard.Request.toEntity(request))
-        );
-    }
+    return CreateBoard.Response.fromEntity(
+        boardRepository.save(CreateBoard.Request.toEntity(request))
+    );
+  }
 
-    @Transactional
-    public BoardDetailDTO editBoard(int id, EditBoard.Request request) {
-        Board board = findBoardById(id);
-        board.setTitle(request.getTitle());
-        board.setContent(request.getContent());
+  @Transactional
+  public BoardDetailDTO editBoard(int id, EditBoard.Request request) {
+    Board board = findBoardById(id);
+    board.setTitle(request.getTitle());
+    board.setContent(request.getContent());
 
-        return BoardDetailDTO.fromEntity(board);
-    }
+    return BoardDetailDTO.fromEntity(board);
+  }
 
 
-    @Transactional
-    public void deleteBoard(int id) {
-        findBoardById(id);
-        boardRepository.deleteById(id);     //예외처리 수정 예정
+  @Transactional
+  public void deleteBoard(int id) {
+    findBoardById(id);
+    boardRepository.deleteById(id);     //예외처리 수정 예정
 
-    }
+  }
 
-    public Board findBoardById(int id) {
-        return boardRepository.findById(id)
-                .orElseThrow(RuntimeException::new);    //예외처리 수정 예정
-    }
+  public Board findBoardById(int id) {
+    return boardRepository.findById(id)
+        .orElseThrow(RuntimeException::new);    //예외처리 수정 예정
+  }
 }

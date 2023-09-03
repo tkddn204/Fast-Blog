@@ -22,9 +22,10 @@ public class BoardController {
 
   @GetMapping("/boards")
   public List<BoardDetailDTO> getBoards() {
+    log.info("GET /api/boards HTTP/1.1");
 
-    log.info("GET /boards HTTP/1.1");
     return boardService.getAllBoardDetails();
+
     // TODO: 페이지네이션에 대한 의논 필요
   }
 
@@ -32,16 +33,16 @@ public class BoardController {
   public BoardDetailDTO getBoardDetail(
       @PathVariable final int id
   ) {
-    log.info("GET /board/{} HTTP/1.1", id);
-    return boardService.getBoardDetail(id);
+    log.info("GET /api/board/{} HTTP/1.1", id);
 
+    return boardService.getBoardDetail(id);
   }
 
   @PostMapping("/board")
   public CreateBoard.Response createBoard(
       @RequestBody final CreateBoard.Request request
   ) {
-    log.info("POST /board HTTP/1.1");
+    log.info("POST /api/board HTTP/1.1");
     log.info("request : {}", request);
 
     return boardService.createBoard(request);
@@ -54,7 +55,7 @@ public class BoardController {
           @PathVariable final int id,
           @RequestBody final EditBoard.Request request
           ) {
-    log.info("PUT /board/{} HTTP/1.1", id);
+    log.info("PUT /api/board/{} HTTP/1.1", id);
 
     return boardService.editBoard(id, request);
 
@@ -65,8 +66,10 @@ public class BoardController {
   public ResponseDto<Integer> deleteBoard(
       @PathVariable final int id
   ) {
-    log.info("DELETE /board/{} HTTP/1.1", id);
+    log.info("DELETE /api/board/{} HTTP/1.1", id);
+
     boardService.deleteBoard(id);
+
     return new ResponseDto<Integer>(HttpStatus.OK.value(), 1);
 
     // TODO: 삭제 후 동작(어디로 리다이렉트할지)에 대한 의논 필요
