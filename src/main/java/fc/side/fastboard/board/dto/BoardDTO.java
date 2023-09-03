@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class BoardDTO {
+public class BoardDTO { //해당 Dto 필요 한지? 의논
   private int writerId;
   private String title;
   private LocalDateTime createdAt;
