@@ -1,6 +1,6 @@
 package fc.side.fastboard.board.service;
 
-import fc.side.fastboard.board.dto.BoardDetailDto;
+import fc.side.fastboard.board.dto.BoardDetailDTO;
 import fc.side.fastboard.board.dto.CreateBoard;
 import fc.side.fastboard.board.dto.EditBoard;
 import fc.side.fastboard.board.entity.Board;
@@ -19,14 +19,14 @@ public class BoardService {
     private final BoardRepository boardRepository;
 
     @Transactional
-    public List<BoardDetailDto> getAllBoardDetails() {
+    public List<BoardDetailDTO> getAllBoardDetails() {
         return boardRepository.findAll().stream()
-                .map(BoardDetailDto::fromEntity).collect(Collectors.toList());
+                .map(BoardDetailDTO::fromEntity).collect(Collectors.toList());
     }
 
     @Transactional
-    public BoardDetailDto getBoardDetail(int id) {
-        return BoardDetailDto.fromEntity(findBoardById(id));
+    public BoardDetailDTO getBoardDetail(int id) {
+        return BoardDetailDTO.fromEntity(findBoardById(id));
     }
 
     @Transactional
@@ -38,12 +38,12 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardDetailDto editBoard(int id, EditBoard.Request request) {
+    public BoardDetailDTO editBoard(int id, EditBoard.Request request) {
         Board board = findBoardById(id);
         board.setTitle(request.getTitle());
         board.setContent(request.getContent());
 
-        return BoardDetailDto.fromEntity(board);
+        return BoardDetailDTO.fromEntity(board);
     }
 
 

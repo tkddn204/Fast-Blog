@@ -1,6 +1,6 @@
 package fc.side.fastboard.board.controller;
 
-import fc.side.fastboard.board.dto.BoardDetailDto;
+import fc.side.fastboard.board.dto.BoardDetailDTO;
 import fc.side.fastboard.board.dto.CreateBoard;
 import fc.side.fastboard.board.dto.EditBoard;
 import fc.side.fastboard.board.dto.ResponseDto;
@@ -21,7 +21,7 @@ public class BoardController {
   private final BoardService boardService;
 
   @GetMapping("/boards")
-  public List<BoardDetailDto> getBoards() {
+  public List<BoardDetailDTO> getBoards() {
 
     log.info("GET /boards HTTP/1.1");
     return boardService.getAllBoardDetails();
@@ -29,7 +29,7 @@ public class BoardController {
   }
 
   @GetMapping("/board/{id}")
-  public BoardDetailDto getBoardDetail(
+  public BoardDetailDTO getBoardDetail(
       @PathVariable final int id
   ) {
     log.info("GET /board/{} HTTP/1.1", id);
@@ -50,7 +50,7 @@ public class BoardController {
   }
 
   @PutMapping("/board/{id}")
-  public BoardDetailDto updateBoard(
+  public BoardDetailDTO updateBoard(
           @PathVariable final int id,
           @RequestBody final EditBoard.Request request
           ) {
