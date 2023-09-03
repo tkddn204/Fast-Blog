@@ -16,6 +16,7 @@ public class EditBoard {
     @Builder
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class Request {
+
         @Size(min = 1, max = 15, message = "title size must be 3-15.")
         private String title;
 

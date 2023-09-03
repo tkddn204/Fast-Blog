@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class BoardDetailDto {
+  private int id;
   private int writerId;
   private String title;
   private String content;
@@ -23,6 +24,7 @@ public class BoardDetailDto {
 
   public static BoardDetailDto fromEntity(Board board) {
     return BoardDetailDto.builder()
+            .id(board.getId())
             .writerId(board.getWriterId())
             .title(board.getTitle())
             .content(board.getContent())

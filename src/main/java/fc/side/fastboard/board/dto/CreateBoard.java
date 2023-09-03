@@ -39,6 +39,7 @@ public class CreateBoard {
     @Builder
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class Response {
+        private Integer id;
         private Integer writerId;
         private String title;
         private String content;
@@ -46,6 +47,7 @@ public class CreateBoard {
 
         public static Response fromEntity(Board board) {
             return Response.builder()
+                    .id(board.getId())
                     .writerId(board.getWriterId())
                     .title(board.getTitle())
                     .content(board.getContent())
