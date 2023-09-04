@@ -39,3 +39,6 @@ out/
 ### HTTP Test ###
 
 !**/src/main/http/
+
+### spring applicaiton setting
+application.yml
