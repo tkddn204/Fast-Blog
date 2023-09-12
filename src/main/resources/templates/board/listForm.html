@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<body>
+<div layout:fragment="content">
+    <!-- Page content-->
+    <div class="container" style="max-width: 600px">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">게시글 목록</a>
+            </div>
+        </nav>
+        <!-- Blog post-->
+        <div th:each="board : ${boards}">
+            <div class="card mb-4">
+                <a href="#!"><img class="card-img-top"
+                                  src="https://dummyimage.com/700x350/dee2e6/6c757d.jpg" alt="..."/></a>
+                <div class="card-body">
+                    <div class="small text-muted" th:text="${board.createdAt}">Date</div>
+                    <h2 class="card-title h4" th:text="${board.title}">Post Title</h2>
+                    <p class="card-text" th:text="${board.content}">content</p>
+                    <a class="btn btn-primary" href="#!">Read more →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination-->
+        <nav aria-label="Pagination">
+            <hr class="my-0"/>
+            <ul class="pagination justify-content-center my-4">
+                <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Newer</a>
+                </li>
+                <li class="page-item active" aria-current="page"><a class="page-link" href="#!">1</a></li>
+                <li class="page-item"><a class="page-link" href="#!">2</a></li>
+                <li class="page-item"><a class="page-link" href="#!">3</a></li>
+                <li class="page-item disabled"><a class="page-link" href="#!">...</a></li>
+                <li class="page-item"><a class="page-link" href="#!">15</a></li>
+                <li class="page-item"><a class="page-link" href="#!">Older</a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
+</body>
+</html>

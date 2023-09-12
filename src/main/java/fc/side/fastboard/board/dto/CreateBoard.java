@@ -20,7 +20,7 @@ public class CreateBoard {
         @NotNull
         private Integer writerId;
 
-        @Size(min = 1, max = 15, message = "title size must be 3-15.")
+        @Size(min = 3, max = 15, message = "title size must be 3-15.")
         private String title;
 
         private String content;
@@ -44,6 +44,7 @@ public class CreateBoard {
         private String title;
         private String content;
         private LocalDateTime createdAt;
+        private Integer hit;
 
         public static Response fromEntity(Board board) {
             return Response.builder()
@@ -52,6 +53,7 @@ public class CreateBoard {
                     .title(board.getTitle())
                     .content(board.getContent())
                     .createdAt(board.getCreatedAt())
+                    .hit(board.getHit())
                     .build();
         }
     }

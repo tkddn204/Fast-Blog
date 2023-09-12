@@ -19,13 +19,13 @@ public class BoardService {
   private final BoardRepository boardRepository;
 
   @Transactional
-  public List<BoardDetailDTO> getAllBoardDetails() {
+  public List<BoardDetailDTO> getAllBoards() {
     return boardRepository.findAll().stream()
         .map(BoardDetailDTO::fromEntity).collect(Collectors.toList());
   }
 
   @Transactional
-  public BoardDetailDTO getBoardDetail(int id) {
+  public BoardDetailDTO getBoardById(int id) {
     return BoardDetailDTO.fromEntity(findBoardById(id));
   }
 

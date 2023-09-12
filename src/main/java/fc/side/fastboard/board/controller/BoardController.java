@@ -2,76 +2,59 @@ package fc.side.fastboard.board.controller;
 
 import fc.side.fastboard.board.dto.BoardDetailDTO;
 import fc.side.fastboard.board.dto.CreateBoard;
-import fc.side.fastboard.board.dto.EditBoard;
-import fc.side.fastboard.board.dto.ResponseDto;
+import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.service.BoardService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Slf4j
-@RestController
+@Controller
 @RequiredArgsConstructor
-@RequestMapping("/api")
 public class BoardController {
 
   private final BoardService boardService;
 
-  @GetMapping("/boards")
-  public List<BoardDetailDTO> getBoards() {
-    log.info("GET /api/boards HTTP/1.1");
-
-    return boardService.getAllBoardDetails();
-
-    // TODO: 페이지네이션에 대한 의논 필요
+  @GetMapping("")
+  public String index() {
+    return "index";
   }
 
-  @GetMapping("/board/{id}")
-  public BoardDetailDTO getBoardDetail(
-      @PathVariable final int id
-  ) {
-    log.info("GET /api/board/{} HTTP/1.1", id);
-
-    return boardService.getBoardDetail(id);
-  }
-
-  @PostMapping("/board")
-  public CreateBoard.Response createBoard(
-      @RequestBody final CreateBoard.Request request
-  ) {
-    log.info("POST /api/board HTTP/1.1");
-    log.info("request : {}", request);
-
-    return boardService.createBoard(request);
-
-    // TODO: 생성 후 동작(어디로 리다이렉트할지)에 대한 의논 필요
-  }
-
-  @PutMapping("/board/{id}")
-  public BoardDetailDTO updateBoard(
-          @PathVariable final int id,
-          @RequestBody final EditBoard.Request request
+  @GetMapping("/board/{boardId}")
+  public String board(
+          @PathVariable Integer boardId,
+          Model model
           ) {
-    log.info("PUT /api/board/{} HTTP/1.1", id);
-
-    return boardService.editBoard(id, request);
-
-    // TODO: 수정 후 동작(어디로 리다이렉트할지)에 대한 의논 필요
+    Board findBoard = boardService.findBoardById(boardId);
+    model.addAttribute("board", findBoard);
+    return "board/detailForm";
   }
 
-  @DeleteMapping("/board/{id}")
-  public ResponseDto<Integer> deleteBoard(
-      @PathVariable final int id
+  @GetMapping("/board/addForm")
+  public String addForm() {
+    return "board/postForm";
+  }
+
+  @PostMapping("/board/addForm")
+  public String addBoard(
+          @ModelAttribute @Valid CreateBoard.Request boardRequest
   ) {
-    log.info("DELETE /api/board/{} HTTP/1.1", id);
-
-    boardService.deleteBoard(id);
-
-    return new ResponseDto<Integer>(HttpStatus.OK.value(), 1);
-
-    // TODO: 삭제 후 동작(어디로 리다이렉트할지)에 대한 의논 필요
+    CreateBoard.Response boardResponse = boardService.createBoard(boardRequest);
+    return "redirect:/board/" + boardResponse.getId();
   }
+
+  @GetMapping("/boards")
+  public String test(Model model) {
+    List<BoardDetailDTO> boards = boardService.getAllBoards();
+    model.addAttribute("boards", boards);
+    return "board/listForm";
+  }
+
+
 }

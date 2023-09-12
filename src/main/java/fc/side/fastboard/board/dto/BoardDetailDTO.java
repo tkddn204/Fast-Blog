@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 @ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class BoardDetailDTO {
-  private int id;
-  private int writerId;
+  private Integer id;
+  private Integer writerId;
   private String title;
   private String content;
   private LocalDateTime createdAt;
