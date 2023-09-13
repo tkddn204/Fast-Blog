@@ -41,4 +41,4 @@ out/
 !**/src/main/http/
 
 ### spring applicaiton setting
-application.yml
+src/**/application-*.yml
