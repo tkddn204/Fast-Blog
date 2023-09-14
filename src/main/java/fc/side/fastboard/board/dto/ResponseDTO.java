@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ResponseDto<T> {
+public class ResponseDTO<T> {
 
     int status;
     T data;

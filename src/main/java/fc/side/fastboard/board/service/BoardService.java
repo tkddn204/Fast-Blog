@@ -1,8 +1,8 @@
 package fc.side.fastboard.board.service;
 
 import fc.side.fastboard.board.dto.BoardDetailDTO;
-import fc.side.fastboard.board.dto.CreateBoard;
-import fc.side.fastboard.board.dto.EditBoard;
+import fc.side.fastboard.board.dto.CreateBoardDTO;
+import fc.side.fastboard.board.dto.EditBoardDTO;
 import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,18 +30,18 @@ public class BoardService {
   }
 
   @Transactional
-  public CreateBoard.Response createBoard(CreateBoard.Request request) {
+  public BoardDetailDTO createBoard(CreateBoardDTO boardDto) {
 
-    return CreateBoard.Response.fromEntity(
-        boardRepository.save(CreateBoard.Request.toEntity(request))
+    return BoardDetailDTO.fromEntity(
+        boardRepository.save(CreateBoardDTO.toEntity(boardDto))
     );
   }
 
   @Transactional
-  public BoardDetailDTO editBoard(int id, EditBoard.Request request) {
+  public BoardDetailDTO editBoard(int id, EditBoardDTO boardDto) {
     Board board = findBoardById(id);
-    board.setTitle(request.getTitle());
-    board.setContent(request.getContent());
+    board.setTitle(boardDto.getTitle());
+    board.setContent(boardDto.getContent());
 
     return BoardDetailDTO.fromEntity(board);
   }
