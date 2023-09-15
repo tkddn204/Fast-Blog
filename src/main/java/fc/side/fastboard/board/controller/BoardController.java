@@ -1,8 +1,8 @@
 package fc.side.fastboard.board.controller;
 
 import fc.side.fastboard.board.dto.BoardDetailDTO;
-import fc.side.fastboard.board.dto.CreateBoard;
-import fc.side.fastboard.board.dto.EditBoard;
+import fc.side.fastboard.board.dto.CreateBoardDTO;
+import fc.side.fastboard.board.dto.EditBoardDTO;
 import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.service.BoardService;
 import jakarta.validation.Valid;
@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,10 +44,10 @@ public class BoardController {
 
   @PostMapping("/board/addForm")
   public String addBoard(
-      @ModelAttribute @Valid CreateBoard.Request boardRequest
+          @ModelAttribute CreateBoardDTO boardDto
   ) {
-    CreateBoard.Response boardResponse = boardService.createBoard(boardRequest);
-    return "redirect:/board/" + boardResponse.getId();
+    BoardDetailDTO boardDetail = boardService.createBoard(boardDto);
+    return "redirect:/board/" + boardDetail.getId();
   }
 
   @GetMapping("/board/editForm/{boardId}")
@@ -62,9 +63,9 @@ public class BoardController {
   @PostMapping("/board/editForm/{boardId}")
   public String editBoard(
       @PathVariable Integer boardId,
-      @ModelAttribute @Valid EditBoard.Request boardRequest
+      @ModelAttribute @Valid EditBoardDTO boardDto
   ) {
-    boardService.editBoard(boardId, boardRequest);
+    boardService.editBoard(boardId, boardDto);
     return "redirect:/board/" + boardId;
   }
 

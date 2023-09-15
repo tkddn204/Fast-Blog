@@ -1,8 +1,8 @@
 package fc.side.fastboard.board.service;
 
 import fc.side.fastboard.board.dto.BoardDetailDTO;
-import fc.side.fastboard.board.dto.CreateBoard;
-import fc.side.fastboard.board.dto.EditBoard;
+import fc.side.fastboard.board.dto.CreateBoardDTO;
+import fc.side.fastboard.board.dto.EditBoardDTO;
 import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,22 +31,23 @@ public class BoardService {
   }
 
   @Transactional
-  public CreateBoard.Response createBoard(CreateBoard.Request request) {
-    Board newBoard = Optional.of(request).map(CreateBoard.Request::toEntity)
+  public BoardDetailDTO createBoard(CreateBoardDTO boardDto) {
+    Board newBoard = Optional.of(boardDto)
+        .map(CreateBoardDTO::toEntity)
         .map(boardRepository::save)
         .orElseThrow(() -> new RuntimeException("새 게시글 생성 중에 에러가 발생했습니다."));
 
     return Optional.of(newBoard)
-        .map(CreateBoard.Response::fromEntity)
+        .map(BoardDetailDTO::fromEntity)
         .orElseThrow(() -> new RuntimeException("DTO 변환 중에 에러가 발생했습니다."));
   }
 
   @Transactional
-  public void editBoard(int id, EditBoard.Request request) {
+  public void editBoard(int id, EditBoardDTO boardDto) {
     Optional.of(findBoardById(id))
         .ifPresentOrElse(foundBoard -> {
-          foundBoard.setTitle(request.getTitle());
-          foundBoard.setContent(request.getContent());
+          foundBoard.setTitle(boardDto.getTitle());
+          foundBoard.setContent(boardDto.getContent());
         }, () -> {
           throw new RuntimeException("게시글 수정 중에 에러가 발생했습니다.");
         });
