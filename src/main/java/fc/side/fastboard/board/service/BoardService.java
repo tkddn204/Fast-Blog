@@ -49,7 +49,7 @@ public class BoardService {
           foundBoard.setTitle(boardDto.getTitle());
           foundBoard.setContent(boardDto.getContent());
         }, () -> {
-          throw new RuntimeException("게시글 수정 중에 에러가 발생했습니다.");
+          throw new RuntimeException("게시글 " + id + "번 수정 중에 에러가 발생했습니다.");
         });
   }
 

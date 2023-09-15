@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,7 +38,7 @@ public class BoardController {
 
   @GetMapping("/board/addForm")
   public String addForm() {
-    return "board/editForm";
+    return "board/postForm";
   }
 
   @PostMapping("/board/addForm")
@@ -57,7 +56,7 @@ public class BoardController {
   ) {
     Board findBoard = boardService.findBoardById(boardId);
     model.addAttribute("board", findBoard);
-    return "board/editForm";
+    return "board/postForm";
   }
 
   @PostMapping("/board/editForm/{boardId}")
