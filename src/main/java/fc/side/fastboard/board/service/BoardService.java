@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,27 +32,30 @@ public class BoardService {
 
   @Transactional
   public CreateBoard.Response createBoard(CreateBoard.Request request) {
+    Board newBoard = Optional.of(request).map(CreateBoard.Request::toEntity)
+        .map(boardRepository::save)
+        .orElseThrow(() -> new RuntimeException("새 게시글 생성 중에 에러가 발생했습니다."));
 
-    return CreateBoard.Response.fromEntity(
-        boardRepository.save(CreateBoard.Request.toEntity(request))
-    );
+    return Optional.of(newBoard)
+        .map(CreateBoard.Response::fromEntity)
+        .orElseThrow(() -> new RuntimeException("DTO 변환 중에 에러가 발생했습니다."));
   }
 
   @Transactional
-  public BoardDetailDTO editBoard(int id, EditBoard.Request request) {
-    Board board = findBoardById(id);
-    board.setTitle(request.getTitle());
-    board.setContent(request.getContent());
-
-    return BoardDetailDTO.fromEntity(board);
+  public void editBoard(int id, EditBoard.Request request) {
+    Optional.of(findBoardById(id))
+        .ifPresentOrElse(foundBoard -> {
+          foundBoard.setTitle(request.getTitle());
+          foundBoard.setContent(request.getContent());
+        }, () -> {
+          throw new RuntimeException("게시글 수정 중에 에러가 발생했습니다.");
+        });
   }
-
 
   @Transactional
   public void deleteBoard(int id) {
     findBoardById(id);
     boardRepository.deleteById(id);     //예외처리 수정 예정
-
   }
 
   public Board findBoardById(int id) {

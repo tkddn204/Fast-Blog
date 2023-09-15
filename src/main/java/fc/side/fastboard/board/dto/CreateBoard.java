@@ -3,6 +3,7 @@ package fc.side.fastboard.board.dto;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import fc.side.fastboard.board.entity.Board;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -17,12 +18,14 @@ public class CreateBoard {
     @Builder
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class Request {
-        @NotNull
+//        @NotNull // TODO: 임시로 NotNull 해제
         private Integer writerId;
 
+        @NotBlank
         @Size(min = 3, max = 15, message = "title size must be 3-15.")
         private String title;
 
+        @NotBlank
         private String content;
 
         public static Board toEntity(Request request) {
