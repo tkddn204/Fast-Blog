@@ -1,7 +1,1 @@
-PUT http://localhost:8080/api/board/1
-Content-Type: application/json
-
-{
-  "title": "수정된 제목이다.",
-  "content": "수정된 내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다."
-}
+POST http://localhost:8080/board/editForm/1?title=제목수정테스트&content=내용수정테스트54321내용을수정했다
