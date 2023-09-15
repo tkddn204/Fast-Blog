@@ -1,8 +1,1 @@
-POST http://localhost:8080/board/addForm
-Content-Type: application/json
-
-{
-  "writer_id": 1,
-  "title": "제목이다.",
-  "content": "내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다.내용입니다."
-}
+POST http://localhost:8080/board/addForm?writerId=1&title=제목테스트&content=내용테스트내용테스트내용테스트123
