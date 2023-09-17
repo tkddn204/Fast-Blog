@@ -5,6 +5,7 @@ import fc.side.fastboard.board.dto.CreateBoardDTO;
 import fc.side.fastboard.board.dto.EditBoardDTO;
 import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.service.BoardService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,7 +56,7 @@ public class BoardController {
 
   @PostMapping("/board/addForm")
   public String addBoard(
-          @ModelAttribute CreateBoardDTO boardDto
+      @ModelAttribute CreateBoardDTO boardDto
   ) {
     BoardDetailDTO boardDetail = boardService.createBoard(boardDto);
     return "redirect:/board/" + boardDetail.getId();
@@ -80,11 +81,20 @@ public class BoardController {
     return "redirect:/board/" + boardId;
   }
 
+  @GetMapping("/board/deleteForm/{boardId}")
+  public String deleteForm(
+      @PathVariable Integer boardId
+  ) {
+    boardService.deleteBoard(boardId);
+    return "redirect:/";
+  }
+
+
   @GetMapping("/boards")
   public String getMyBoards(
-          Model model,
-          @PageableDefault(size=3, sort="id", direction = Sort.Direction.DESC)
-          Pageable pageable
+      Model model,
+      @PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC)
+      Pageable pageable
   ) {
     Page<BoardDetailDTO> boards = boardService.getMyBoards(pageable);
     model.addAttribute("boards", boards);
@@ -96,12 +106,10 @@ public class BoardController {
     log.info("width={}", width);
 
     int nowPage = pageNum + 1;
-    int startPage = Math.max(nowPage-3, 1);
+    int startPage = Math.max(nowPage - 3, 1);
     int endPage = Math.min(nowPage + 4, totalPages);
     model.addAttribute("nowPage", nowPage);
     model.addAttribute("startPage", startPage);
     model.addAttribute("endPage", endPage);
   }
-
-
 }

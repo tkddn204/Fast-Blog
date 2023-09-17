@@ -24,6 +24,10 @@
                             <p class="fs-5 mb-4" th:text="${board.content}">This is content</p>
                         </section>
                     </article>
+                    <section class="md-5 my-3">
+                        <button class="btn btn-primary btn-sm" th:attr="onclick=|onClickEdit(${board.id})|">글 수정</button>
+                        <button class="btn btn-danger btn-sm" th:attr="onclick=|onClickDelete(${board.id})|">글 삭제</button>
+                    </section>
                     <!-- Comments section-->
                     <section class="mb-5">
                         <div class="card bg-light">
@@ -66,6 +70,17 @@
                             </div>
                         </div>
                     </section>
+                    <script th:inline="javascript">
+                        function onClickEdit(id) {
+                            location.href=`/board/editForm/${id}`
+                        }
+
+                        function onClickDelete(id) {
+                            if (confirm('글을 삭제하시겠습니까?')) {
+                                location.href=`/board/deleteForm/${id}`
+                            }
+                        }
+                    </script>
                 </div>
             </div>
         </div>
