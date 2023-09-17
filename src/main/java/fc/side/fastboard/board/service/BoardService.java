@@ -14,8 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static fc.side.fastboard.common.exception.BoardErrorCode.BOARD_NO_EXIST;
-import static fc.side.fastboard.common.exception.BoardErrorCode.CANNOT_SAVE_BOARD;
+import static fc.side.fastboard.common.exception.BoardErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -24,18 +23,18 @@ public class BoardService {
   private final BoardRepository boardRepository;
 
   @Transactional
-  public Page<BoardDetailDTO> getAllBoards(Pageable pageable) {
+  public Page<BoardDetailDTO> findAllBoards(Pageable pageable) {
     return boardRepository.findAll(pageable).map(BoardDetailDTO::fromEntity);
   }
 
   @Transactional
-  public Page<BoardDetailDTO> getMyBoards(Pageable pageable) {
+  public Page<BoardDetailDTO> findMyBoards(Pageable pageable) {
     return boardRepository.findAll(pageable).map(BoardDetailDTO::fromEntity);
   }
 
   @Transactional
-  public BoardDetailDTO getBoardById(int id) {
-    return BoardDetailDTO.fromEntity(findBoardById(id));
+  public BoardDetailDTO findBoardById(int id) {
+    return BoardDetailDTO.fromEntity(getBoardById(id));
   }
 
   @Transactional
@@ -50,22 +49,22 @@ public class BoardService {
 
   @Transactional
   public void editBoard(int id, EditBoardDTO boardDto) {
-    Board foundBoard = findBoardById(id);
+    Board foundBoard = getBoardById(id);
     foundBoard.setTitle(boardDto.getTitle());
     foundBoard.setContent(boardDto.getContent());
   }
 
   @Transactional
   public void deleteBoard(int id) {
-    Optional.of(findBoardById(id))
+    boardRepository.findById(id)
         .ifPresentOrElse(foundBoard -> {
           boardRepository.deleteById(foundBoard.getId());
         }, () -> {
-          throw new RuntimeException("게시글 " + id + "번을 삭제하는데 실패했습니다.");
+          throw new BoardException(CANNOT_DELETE_BOARD);
         });
   }
 
-  public Board findBoardById(int id) {
+  public Board getBoardById(int id) {
     return boardRepository.findById(id)
         .orElseThrow(()->new BoardException(BOARD_NO_EXIST));
   }

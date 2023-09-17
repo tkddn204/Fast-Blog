@@ -32,7 +32,7 @@ public class BoardController {
           @PageableDefault(size=6, sort="id", direction = Sort.Direction.DESC)
           Pageable pageable
   ) {
-    Page<BoardDetailDTO> boards = boardService.getAllBoards(pageable);
+    Page<BoardDetailDTO> boards = boardService.findAllBoards(pageable);
     PageNumber<BoardDetailDTO> pageNumber = new PageNumber<>(boards);
 
     model.addAttribute("boards", boards);
@@ -45,7 +45,7 @@ public class BoardController {
       @PathVariable Integer boardId,
       Model model
   ) {
-    BoardDetailDTO findBoard = boardService.getBoardById(boardId);
+    BoardDetailDTO findBoard = boardService.findBoardById(boardId);
     model.addAttribute("board", findBoard);
     return "board/detailForm";
   }
@@ -68,7 +68,7 @@ public class BoardController {
       @PathVariable Integer boardId,
       Model model
   ) {
-    Board findBoard = boardService.findBoardById(boardId);
+    Board findBoard = boardService.getBoardById(boardId);
     model.addAttribute("board", findBoard);
     return "board/postForm";
   }
@@ -97,7 +97,7 @@ public class BoardController {
       @PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC)
       Pageable pageable
   ) {
-    Page<BoardDetailDTO> boards = boardService.getMyBoards(pageable);
+    Page<BoardDetailDTO> boards = boardService.findMyBoards(pageable);
     PageNumber<BoardDetailDTO> pageNumber = new PageNumber<>(boards);
 
     model.addAttribute("boards", boards);
