@@ -6,6 +6,8 @@ import fc.side.fastboard.board.dto.EditBoardDTO;
 import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,11 @@ public class BoardService {
   public List<BoardDetailDTO> getAllBoards() {
     return boardRepository.findAll().stream()
         .map(BoardDetailDTO::fromEntity).collect(Collectors.toList());
+  }
+
+  @Transactional
+  public Page<BoardDetailDTO> getMyBoards(Pageable pageable) {
+    return boardRepository.findAll(pageable).map(BoardDetailDTO::fromEntity);
   }
 
   @Transactional
