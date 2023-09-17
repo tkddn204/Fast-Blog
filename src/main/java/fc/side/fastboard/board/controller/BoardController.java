@@ -2,6 +2,7 @@ package fc.side.fastboard.board.controller;
 
 import fc.side.fastboard.board.dto.BoardDetailDTO;
 import fc.side.fastboard.board.dto.CreateBoardDTO;
+import fc.side.fastboard.board.dto.EditBoardDTO;
 import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -39,9 +40,9 @@ public class BoardController {
 
   @GetMapping("/board/{boardId}")
   public String board(
-          @PathVariable Integer boardId,
-          Model model
-          ) {
+      @PathVariable Integer boardId,
+      Model model
+  ) {
     Board findBoard = boardService.findBoardById(boardId);
     model.addAttribute("board", findBoard);
     return "board/detailForm";
@@ -58,6 +59,25 @@ public class BoardController {
   ) {
     BoardDetailDTO boardDetail = boardService.createBoard(boardDto);
     return "redirect:/board/" + boardDetail.getId();
+  }
+
+  @GetMapping("/board/editForm/{boardId}")
+  public String editForm(
+      @PathVariable Integer boardId,
+      Model model
+  ) {
+    Board findBoard = boardService.findBoardById(boardId);
+    model.addAttribute("board", findBoard);
+    return "board/postForm";
+  }
+
+  @PostMapping("/board/editForm/{boardId}")
+  public String editBoard(
+      @PathVariable Integer boardId,
+      @ModelAttribute @Valid EditBoardDTO boardDto
+  ) {
+    boardService.editBoard(boardId, boardDto);
+    return "redirect:/board/" + boardId;
   }
 
   @GetMapping("/boards")
