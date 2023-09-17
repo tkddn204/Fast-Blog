@@ -28,19 +28,23 @@ import java.util.List;
 public class BoardController {
 
   private final BoardService boardService;
-  @Value("${pagination.width}")
-  private int width;
 
   @GetMapping("/")
-  public String index(Model model) {
-    List<BoardDetailDTO> boards = boardService.getAllBoards();
-    log.info("getBoards={}", boards);
+  public String index(
+          Model model,
+          @PageableDefault(size=6, sort="id", direction = Sort.Direction.DESC)
+          Pageable pageable
+  ) {
+    Page<BoardDetailDTO> boards = boardService.getAllBoards(pageable);
+    PageNumber<BoardDetailDTO> pageNumber = new PageNumber<>(boards);
+
     model.addAttribute("boards", boards);
-    return "index";
+    model.addAttribute("pageNumber", pageNumber);
+    return "index-temp";
   }
 
   @GetMapping("/board/{boardId}")
-  public String board(
+  public String getBoard(
       @PathVariable Integer boardId,
       Model model
   ) {

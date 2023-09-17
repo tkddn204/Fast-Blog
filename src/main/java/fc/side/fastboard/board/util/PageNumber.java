@@ -1,14 +1,15 @@
 package fc.side.fastboard.board.util;
 
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 
 @Getter
 public class PageNumber <T> {
-    private Page<T> page;
-    private int nowPage;
-    private int startPage;
-    private int endPage;
+    private final Page<T> page;
+    private final int nowPage;
+    private final int startPage;
+    private final int endPage;
 
     private final static int PAGING_WIDTH = 3;
 

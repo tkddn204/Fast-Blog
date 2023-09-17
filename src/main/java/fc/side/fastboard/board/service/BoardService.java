@@ -25,9 +25,8 @@ public class BoardService {
   private final BoardRepository boardRepository;
 
   @Transactional
-  public List<BoardDetailDTO> getAllBoards() {
-    return boardRepository.findAll().stream()
-        .map(BoardDetailDTO::fromEntity).collect(Collectors.toList());
+  public Page<BoardDetailDTO> getAllBoards(Pageable pageable) {
+    return boardRepository.findAll(pageable).map(BoardDetailDTO::fromEntity);
   }
 
   @Transactional
