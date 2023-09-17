@@ -7,12 +7,16 @@
 <div layout:fragment="content">
     <!-- Page content-->
     <div class="container" style="max-width: 600px">
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">게시글 목록</a>
-            </div>
-        </nav>
+        <div style="padding-top:15px;">
+            <h3 href="#">게시글 목록</h3>
+            <hr class="my-2">
+        </div>
+
         <!-- Blog post-->
+        <div th:if="${#lists.isEmpty(boards)}" style="padding-top:15px; padding-bottom: 15px">
+            <p>게시물이 없습니다.</p>
+        </div>
+
         <div th:each="board : ${boards}">
             <div class="card mb-4">
                 <a href="#!"><img class="card-img-top"
@@ -30,14 +34,18 @@
         <nav aria-label="Pagination">
             <hr class="my-0"/>
             <ul class="pagination justify-content-center my-4">
-                <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Newer</a>
-                </li>
-                <li class="page-item active" aria-current="page"><a class="page-link" href="#!">1</a></li>
-                <li class="page-item"><a class="page-link" href="#!">2</a></li>
-                <li class="page-item"><a class="page-link" href="#!">3</a></li>
-                <li class="page-item disabled"><a class="page-link" href="#!">...</a></li>
-                <li class="page-item"><a class="page-link" href="#!">15</a></li>
-                <li class="page-item"><a class="page-link" href="#!">Older</a></li>
+<!--                <li class="page-item disabled">-->
+<!--                    <a class="page-link"  tabindex="-1" aria-disabled="true">이전</a>-->
+<!--                </li>-->
+                <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
+                    <li class="page-item active" aria-current="page" th:if="${page == nowPage}">
+                        <a class="page-link" th:text="${page}">1</a>
+                    </li>
+                    <li class="page-item" aria-current="page" th:if="${page != nowPage}">
+                        <a class="page-link" th:href="@{/boards(page = ${page-1})}" th:text="${page}">1</a>
+                    </li>
+                </th:block>
+<!--                <li class="page-item"><a class="page-link" th:href="@{/boards(page=${nowPage+1})}">다음</a></li>-->
             </ul>
         </nav>
     </div>
