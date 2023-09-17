@@ -5,6 +5,7 @@ import fc.side.fastboard.board.dto.CreateBoardDTO;
 import fc.side.fastboard.board.dto.EditBoardDTO;
 import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.repository.BoardRepository;
+import fc.side.fastboard.common.exception.BoardException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static fc.side.fastboard.common.exception.BoardErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -42,22 +45,16 @@ public class BoardService {
     Board newBoard = Optional.of(boardDto)
         .map(CreateBoardDTO::toEntity)
         .map(boardRepository::save)
-        .orElseThrow(() -> new RuntimeException("새 게시글 생성 중에 에러가 발생했습니다."));
+        .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
 
-    return Optional.of(newBoard)
-        .map(BoardDetailDTO::fromEntity)
-        .orElseThrow(() -> new RuntimeException("DTO 변환 중에 에러가 발생했습니다."));
+    return BoardDetailDTO.fromEntity(newBoard);
   }
 
   @Transactional
   public void editBoard(int id, EditBoardDTO boardDto) {
-    Optional.of(findBoardById(id))
-        .ifPresentOrElse(foundBoard -> {
-          foundBoard.setTitle(boardDto.getTitle());
-          foundBoard.setContent(boardDto.getContent());
-        }, () -> {
-          throw new RuntimeException("게시글 " + id + "번 수정 중에 에러가 발생했습니다.");
-        });
+    Board foundBoard = findBoardById(id);
+    foundBoard.setTitle(boardDto.getTitle());
+    foundBoard.setContent(boardDto.getContent());
   }
 
   @Transactional
@@ -68,6 +65,6 @@ public class BoardService {
 
   public Board findBoardById(int id) {
     return boardRepository.findById(id)
-        .orElseThrow(RuntimeException::new);    //예외처리 수정 예정
+        .orElseThrow(()->new BoardException(BOARD_NO_EXIST));
   }
 }

@@ -43,7 +43,7 @@ public class BoardController {
       @PathVariable Integer boardId,
       Model model
   ) {
-    Board findBoard = boardService.findBoardById(boardId);
+    BoardDetailDTO findBoard = boardService.getBoardById(boardId);
     model.addAttribute("board", findBoard);
     return "board/detailForm";
   }
@@ -74,7 +74,7 @@ public class BoardController {
   @PostMapping("/board/editForm/{boardId}")
   public String editBoard(
       @PathVariable Integer boardId,
-      @ModelAttribute @Valid EditBoardDTO boardDto
+      @ModelAttribute EditBoardDTO boardDto
   ) {
     boardService.editBoard(boardId, boardDto);
     return "redirect:/board/" + boardId;
