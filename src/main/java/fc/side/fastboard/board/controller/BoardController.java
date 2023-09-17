@@ -5,6 +5,7 @@ import fc.side.fastboard.board.dto.CreateBoardDTO;
 import fc.side.fastboard.board.dto.EditBoardDTO;
 import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.service.BoardService;
+import fc.side.fastboard.board.util.PageNumber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -87,21 +88,11 @@ public class BoardController {
           Pageable pageable
   ) {
     Page<BoardDetailDTO> boards = boardService.getMyBoards(pageable);
+    PageNumber<BoardDetailDTO> pageNumber = new PageNumber<>(boards);
+
     model.addAttribute("boards", boards);
-    setPagingModel(model, pageable.getPageNumber(), boards.getTotalPages());
+    model.addAttribute("pageNumber", pageNumber);
     return "board/listForm";
   }
-
-  private void setPagingModel(Model model, int pageNum, int totalPages) {
-    log.info("width={}", width);
-
-    int nowPage = pageNum + 1;
-    int startPage = Math.max(nowPage-3, 1);
-    int endPage = Math.min(nowPage + 4, totalPages);
-    model.addAttribute("nowPage", nowPage);
-    model.addAttribute("startPage", startPage);
-    model.addAttribute("endPage", endPage);
-  }
-
 
 }
