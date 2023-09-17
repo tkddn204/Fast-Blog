@@ -1,24 +1,35 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
-    th:fragment="navbar">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="navbar">
 <!-- Responsive navbar-->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand" href="/">fastboard</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="/board/addForm">게시글 작성</a></li>
-                <li class="nav-item"><a class="nav-link active" aria-current="page" href="/boards">내 게시글</a></li>
-            </ul>
-        </div>
+  <div class="container">
+    <a class="navbar-brand" href="/">fastboard</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="/board/addForm">게시글 작성</a></li>
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="/boards">게시글 목록</a></li>
+        <li class="nav-item" sec:authorize="isAnonymous()">
+          <a class="nav-link active" aria-current="page" href="/login">로그인</a>
+        </li>
+        <form sec:authorize="isAuthenticated()" class="nav-item" th:action="@{/logout}" method="post">
+          <button class="nav-link active" type="submit"
+                  style="background-color: transparent; border: 0;">
+            로그아웃
+          </button>
+        </form>
+      </ul>
     </div>
+  </div>
 </nav>
 </html>
+
