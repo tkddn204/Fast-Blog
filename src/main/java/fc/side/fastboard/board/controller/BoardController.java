@@ -8,7 +8,6 @@ import fc.side.fastboard.board.service.BoardService;
 import fc.side.fastboard.board.util.PageNumber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,8 +18,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -60,7 +57,7 @@ public class BoardController {
 
   @PostMapping("/board/addForm")
   public String addBoard(
-          @ModelAttribute CreateBoardDTO boardDto
+      @ModelAttribute CreateBoardDTO boardDto
   ) {
     BoardDetailDTO boardDetail = boardService.createBoard(boardDto);
     return "redirect:/board/" + boardDetail.getId();
@@ -85,11 +82,20 @@ public class BoardController {
     return "redirect:/board/" + boardId;
   }
 
+  @GetMapping("/board/deleteForm/{boardId}")
+  public String deleteForm(
+      @PathVariable Integer boardId
+  ) {
+    boardService.deleteBoard(boardId);
+    return "redirect:/";
+  }
+
+
   @GetMapping("/boards")
   public String getMyBoards(
-          Model model,
-          @PageableDefault(size=3, sort="id", direction = Sort.Direction.DESC)
-          Pageable pageable
+      Model model,
+      @PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC)
+      Pageable pageable
   ) {
     Page<BoardDetailDTO> boards = boardService.getMyBoards(pageable);
     PageNumber<BoardDetailDTO> pageNumber = new PageNumber<>(boards);

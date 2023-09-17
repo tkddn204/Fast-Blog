@@ -12,11 +12,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static fc.side.fastboard.common.exception.BoardErrorCode.*;
+import static fc.side.fastboard.common.exception.BoardErrorCode.BOARD_NO_EXIST;
+import static fc.side.fastboard.common.exception.BoardErrorCode.CANNOT_SAVE_BOARD;
 
 @Service
 @RequiredArgsConstructor
@@ -58,8 +57,12 @@ public class BoardService {
 
   @Transactional
   public void deleteBoard(int id) {
-    findBoardById(id);
-    boardRepository.deleteById(id);     //예외처리 수정 예정
+    Optional.of(findBoardById(id))
+        .ifPresentOrElse(foundBoard -> {
+          boardRepository.deleteById(foundBoard.getId());
+        }, () -> {
+          throw new RuntimeException("게시글 " + id + "번을 삭제하는데 실패했습니다.");
+        });
   }
 
   public Board findBoardById(int id) {
