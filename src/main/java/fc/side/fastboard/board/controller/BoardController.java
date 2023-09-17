@@ -68,6 +68,15 @@ public class BoardController {
     return "redirect:/board/" + boardId;
   }
 
+  @GetMapping("/board/deleteForm/{boardId}")
+  public String deleteForm(
+      @PathVariable Integer boardId
+  ) {
+    boardService.deleteBoard(boardId);
+    return "redirect:/boards";
+  }
+
+
   @GetMapping("/boards")
   public String test(Model model) {
     List<BoardDetailDTO> boards = boardService.getAllBoards();

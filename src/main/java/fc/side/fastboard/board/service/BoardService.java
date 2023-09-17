@@ -55,8 +55,12 @@ public class BoardService {
 
   @Transactional
   public void deleteBoard(int id) {
-    findBoardById(id);
-    boardRepository.deleteById(id);     //예외처리 수정 예정
+    Optional.of(findBoardById(id))
+        .ifPresentOrElse(foundBoard -> {
+          boardRepository.deleteById(foundBoard.getId());
+        }, () -> {
+          throw new RuntimeException("게시글 " + id + "번을 삭제하는데 실패했습니다.");
+        });
   }
 
   public Board findBoardById(int id) {
