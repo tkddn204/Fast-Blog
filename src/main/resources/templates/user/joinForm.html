@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+
+    <section section class="vh-100" style="background-color: #508bfc;">
+        <div class="mask d-flex align-items-center h-100 gradient-custom-3">
+            <div class="container h-100">
+                <div class="row d-flex justify-content-center align-items-center h-100">
+                    <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+                        <div class="card" style="border-radius: 15px;">
+                            <div class="card-body p-5">
+                                <h2 class="text-uppercase text-center mb-5"> 회원가입</h2>
+
+                                <form action="/user/join" method="post">
+                                    <div class="form-outline mb-4">
+                                        <label class="form-label" for="form3Example1cg">이름</label>
+                                        <input type="text" id="form3Example1cg" class="form-control form-control-lg" name="userName"/>
+                                    </div>
+
+                                    <div class="form-outline mb-4">
+                                        <label class="form-label" for="form3Example3cg">이메일</label>
+                                        <input type="email" id="form3Example3cg" class="form-control form-control-lg" name="userEmail" />
+                                    </div>
+
+                                    <div class="form-outline mb-4">
+                                        <label class="form-label" for="form3Example4cg">비밀번호</label>
+                                        <input type="password" id="form3Example4cg" class="form-control form-control-lg" name="userPassword" />
+                                    </div>
+
+                                    <div class="form-outline mb-4">
+                                        <label class="form-label" for="form3Example4cdg">비밀번호 확인</label>
+                                        <input type="password" id="form3Example4cdg" class="form-control form-control-lg" />
+                                    </div>
+
+                                    <div class="form-check d-flex justify-content-center mb-5">
+                                        <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3cg" />
+                                        <label class="form-check-label" for="form2Example3g">
+                                            I agree all statements in <a href="#!" class="text-body"><u>Terms of service</u></a>
+                                        </label>
+                                    </div>
+
+                                    <div class="d-flex justify-content-center">
+                                        <button type="submit"
+                                                class="w-75 btn btn-primary btn-lg btn-block"> 가입하기 </button>
+                                    </div>
+
+                                    <p class="text-center text-muted mt-5 mb-0">Have already an account? <a href="#!"
+                                                                                                            class="fw-bold text-body"><u>Login here</u></a></p>
+
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!--<form action="/user/join" method="post">-->
+<!--     이메일:   <input type="text" id="userEmail" name="userEmail"/>-->
+<!--     비밀번호:   <input type="password" id="userPassword" name="userPassword"/>-->
+<!--     이름:    <input type="text" id="userName" name="userName"/>-->
+<!--    <input type="submit"/>-->
+<!--</form>-->
+
+<!--<section class="vh-100" style="background-color: #508bfc;">-->
+<!--    <div class="container py-5 h-100">-->
+<!--        <div class="row d-flex justify-content-center align-items-center h-100">-->
+<!--            <div class="col-12 col-md-8 col-lg-6 col-xl-5">-->
+<!--                <div class="card shadow-2-strong" style="border-radius: 1rem;">-->
+<!--                    <div class="card-body p-5 text-center">-->
+
+<!--                        <h3 class="mb-5"> 회원가입 </h3>-->
+
+
+<!--                        <form action="/user/join" method="post">-->
+
+<!--                            <div class="form-outline mb-4">-->
+<!--                                <input type="email" id="typeEmailX-2" class="form-control form-control-lg" name="userEmail" />-->
+<!--                                <label class="form-label" for="typeEmailX-2">Email</label>-->
+<!--                            </div>-->
+
+<!--                            <div class="form-outline mb-4">-->
+<!--                                <input type="password" id="typePasswordX-2" class="form-control form-control-lg" name="userPassword" />-->
+<!--                                <label class="form-label" for="typePasswordX-2">Password</label>-->
+<!--                            </div>-->
+
+<!--                            <div class="form-outline mb-4">-->
+<!--                                <input type="password" id="typeNameX-2" class="form-control form-control-lg" name="userName"/>-->
+<!--                                <label class="form-label" for="typePasswordX-2">Password</label>-->
+<!--                            </div>-->
+
+<!--                            &lt;!&ndash;                        &lt;!&ndash; Checkbox &ndash;&gt;&ndash;&gt;-->
+<!--                            &lt;!&ndash;                        <div class="form-check d-flex justify-content-start mb-4">&ndash;&gt;-->
+<!--                            &lt;!&ndash;                            <input class="form-check-input" type="checkbox" value="" id="form1Example3" />&ndash;&gt;-->
+<!--                            &lt;!&ndash;                            <label class="form-check-label" for="form1Example3"> Remember password </label>&ndash;&gt;-->
+<!--                            &lt;!&ndash;                        </div>&ndash;&gt;-->
+
+<!--                            <button class="btn btn-primary btn-lg btn-block" type="submit">Login</button>-->
+
+<!--                        </form>-->
+
+
+<!--                        <hr class="my-4">-->
+
+<!--                        &lt;!&ndash;                        <button class="btn btn-lg btn-block btn-primary" style="background-color: #dd4b39;"&ndash;&gt;-->
+<!--                        &lt;!&ndash;                                type="submit"><i class="fab fa-google me-2"></i> Sign in with google</button>&ndash;&gt;-->
+<!--                        &lt;!&ndash;                        <button class="btn btn-lg btn-block btn-primary mb-2" style="background-color: #3b5998;"&ndash;&gt;-->
+<!--                        &lt;!&ndash;                                type="submit"><i class="fab fa-facebook-f me-2"></i>Sign in with facebook</button>&ndash;&gt;-->
+
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</section>-->
+    </div>
+</body>
+</html>
