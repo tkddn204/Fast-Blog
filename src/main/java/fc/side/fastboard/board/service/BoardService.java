@@ -1,16 +1,20 @@
 package fc.side.fastboard.board.service;
 
 import fc.side.fastboard.board.dto.BoardDetailDTO;
-import fc.side.fastboard.board.dto.CreateBoard;
-import fc.side.fastboard.board.dto.EditBoard;
+import fc.side.fastboard.board.dto.CreateBoardDTO;
+import fc.side.fastboard.board.dto.EditBoardDTO;
 import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.repository.BoardRepository;
+import fc.side.fastboard.common.exception.BoardException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+
+import static fc.side.fastboard.common.exception.BoardErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -19,43 +23,49 @@ public class BoardService {
   private final BoardRepository boardRepository;
 
   @Transactional
-  public List<BoardDetailDTO> getAllBoards() {
-    return boardRepository.findAll().stream()
-        .map(BoardDetailDTO::fromEntity).collect(Collectors.toList());
+  public Page<BoardDetailDTO> findAllBoards(Pageable pageable) {
+    return boardRepository.findAll(pageable).map(BoardDetailDTO::fromEntity);
   }
 
   @Transactional
-  public BoardDetailDTO getBoardById(int id) {
-    return BoardDetailDTO.fromEntity(findBoardById(id));
+  public Page<BoardDetailDTO> findMyBoards(Pageable pageable) {
+    return boardRepository.findAll(pageable).map(BoardDetailDTO::fromEntity);
   }
 
   @Transactional
-  public CreateBoard.Response createBoard(CreateBoard.Request request) {
-
-    return CreateBoard.Response.fromEntity(
-        boardRepository.save(CreateBoard.Request.toEntity(request))
-    );
+  public BoardDetailDTO findBoardById(int id) {
+    return BoardDetailDTO.fromEntity(getBoardById(id));
   }
 
   @Transactional
-  public BoardDetailDTO editBoard(int id, EditBoard.Request request) {
-    Board board = findBoardById(id);
-    board.setTitle(request.getTitle());
-    board.setContent(request.getContent());
+  public BoardDetailDTO createBoard(CreateBoardDTO boardDto) {
+    Board newBoard = Optional.of(boardDto)
+        .map(CreateBoardDTO::toEntity)
+        .map(boardRepository::save)
+        .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
 
-    return BoardDetailDTO.fromEntity(board);
+    return BoardDetailDTO.fromEntity(newBoard);
   }
 
+  @Transactional
+  public void editBoard(int id, EditBoardDTO boardDto) {
+    Board foundBoard = getBoardById(id);
+    foundBoard.setTitle(boardDto.getTitle());
+    foundBoard.setContent(boardDto.getContent());
+  }
 
   @Transactional
   public void deleteBoard(int id) {
-    findBoardById(id);
-    boardRepository.deleteById(id);     //예외처리 수정 예정
-
+    boardRepository.findById(id)
+        .ifPresentOrElse(foundBoard -> {
+          boardRepository.deleteById(foundBoard.getId());
+        }, () -> {
+          throw new BoardException(CANNOT_DELETE_BOARD);
+        });
   }
 
-  public Board findBoardById(int id) {
+  public Board getBoardById(int id) {
     return boardRepository.findById(id)
-        .orElseThrow(RuntimeException::new);    //예외처리 수정 예정
+        .orElseThrow(()->new BoardException(BOARD_NO_EXIST));
   }
 }

@@ -1,18 +1,23 @@
 package fc.side.fastboard.board.controller;
 
 import fc.side.fastboard.board.dto.BoardDetailDTO;
-import fc.side.fastboard.board.dto.CreateBoard;
+import fc.side.fastboard.board.dto.CreateBoardDTO;
+import fc.side.fastboard.board.dto.EditBoardDTO;
 import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.service.BoardService;
-import jakarta.validation.Valid;
+import fc.side.fastboard.board.util.PageNumber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Slf4j
 @Controller
@@ -21,17 +26,26 @@ public class BoardController {
 
   private final BoardService boardService;
 
-  @GetMapping("")
-  public String index() {
-    return "index";
+  @GetMapping("/")
+  public String index(
+          Model model,
+          @PageableDefault(size=6, sort="id", direction = Sort.Direction.DESC)
+          Pageable pageable
+  ) {
+    Page<BoardDetailDTO> boards = boardService.findAllBoards(pageable);
+    PageNumber<BoardDetailDTO> pageNumber = new PageNumber<>(boards);
+
+    model.addAttribute("boards", boards);
+    model.addAttribute("pageNumber", pageNumber);
+    return "index-temp";
   }
 
   @GetMapping("/board/{boardId}")
-  public String board(
-          @PathVariable Integer boardId,
-          Model model
-          ) {
-    Board findBoard = boardService.findBoardById(boardId);
+  public String getBoard(
+      @PathVariable Integer boardId,
+      Model model
+  ) {
+    BoardDetailDTO findBoard = boardService.findBoardById(boardId);
     model.addAttribute("board", findBoard);
     return "board/detailForm";
   }
@@ -43,18 +57,52 @@ public class BoardController {
 
   @PostMapping("/board/addForm")
   public String addBoard(
-          @ModelAttribute @Valid CreateBoard.Request boardRequest
+      @ModelAttribute CreateBoardDTO boardDto
   ) {
-    CreateBoard.Response boardResponse = boardService.createBoard(boardRequest);
-    return "redirect:/board/" + boardResponse.getId();
+    BoardDetailDTO boardDetail = boardService.createBoard(boardDto);
+    return "redirect:/board/" + boardDetail.getId();
   }
+
+  @GetMapping("/board/editForm/{boardId}")
+  public String editForm(
+      @PathVariable Integer boardId,
+      Model model
+  ) {
+    Board findBoard = boardService.getBoardById(boardId);
+    model.addAttribute("board", findBoard);
+    return "board/postForm";
+  }
+
+  @PostMapping("/board/editForm/{boardId}")
+  public String editBoard(
+      @PathVariable Integer boardId,
+      @ModelAttribute EditBoardDTO boardDto
+  ) {
+    boardService.editBoard(boardId, boardDto);
+    return "redirect:/board/" + boardId;
+  }
+
+  @GetMapping("/board/deleteForm/{boardId}")
+  public String deleteForm(
+      @PathVariable Integer boardId
+  ) {
+    boardService.deleteBoard(boardId);
+    return "redirect:/";
+  }
+
 
   @GetMapping("/boards")
-  public String test(Model model) {
-    List<BoardDetailDTO> boards = boardService.getAllBoards();
+  public String getMyBoards(
+      Model model,
+      @PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC)
+      Pageable pageable
+  ) {
+    Page<BoardDetailDTO> boards = boardService.findMyBoards(pageable);
+    PageNumber<BoardDetailDTO> pageNumber = new PageNumber<>(boards);
+
     model.addAttribute("boards", boards);
+    model.addAttribute("pageNumber", pageNumber);
     return "board/listForm";
   }
-
 
 }

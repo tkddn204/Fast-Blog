@@ -8,10 +8,9 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-@ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class BoardDetailDTO {
   private Integer id;
@@ -19,8 +18,7 @@ public class BoardDetailDTO {
   private String title;
   private String content;
   private LocalDateTime createdAt;
-  private LocalDateTime modifiedAt;
-  private int hit;
+  private Integer hit;
 
   public static BoardDetailDTO fromEntity(Board board) {
     return BoardDetailDTO.builder()
@@ -29,7 +27,6 @@ public class BoardDetailDTO {
             .title(board.getTitle())
             .content(board.getContent())
             .createdAt(board.getCreatedAt())
-            .modifiedAt(board.getModifiedAt())
             .hit(board.getHit())
             .build();
   }
