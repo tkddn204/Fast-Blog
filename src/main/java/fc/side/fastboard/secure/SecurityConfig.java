@@ -23,8 +23,11 @@ public class SecurityConfig {
 
     private static final String[] PERMIT_PATHS = {
             "/",
+            "/edit",
+            "/editSuccess",
             "/joinSuccess",
-            "/boards"
+            "/boards",
+            "/save/image"
     };
 
     @Bean
