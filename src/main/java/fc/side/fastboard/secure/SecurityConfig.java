@@ -17,13 +17,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
 
     private static final String[] ANONYMOUS_PATHS = {
-            "/join",
-            "/login",
+            "/user/join",
+            "/login"
     };
 
     private static final String[] PERMIT_PATHS = {
             "/",
-            "/joinSuccess",
             "/boards"
     };
 
@@ -35,11 +34,12 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().
-                requestMatchers(new AntPathRequestMatcher( "/favicon.ico"))
-                .requestMatchers(new AntPathRequestMatcher( "/css/**"))
-                .requestMatchers(new AntPathRequestMatcher( "/js/**"))
-                .requestMatchers(new AntPathRequestMatcher( "/img/**"))
-                .requestMatchers(new AntPathRequestMatcher( "/lib/**"));
+                requestMatchers(new AntPathRequestMatcher("/favicon.ico"))
+                .requestMatchers(new AntPathRequestMatcher("/css/**"))
+                .requestMatchers(new AntPathRequestMatcher("/js/**"))
+                .requestMatchers(new AntPathRequestMatcher("/img/**"))
+                .requestMatchers(new AntPathRequestMatcher("/lib/**"))
+                .requestMatchers(new AntPathRequestMatcher("/error"));
     }
 
     @Bean
@@ -56,6 +56,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .usernameParameter("email")
+                        .defaultSuccessUrl("/", true)
                 )
                 .logout(logout -> logout
                         .deleteCookies("JSESSIONID")
