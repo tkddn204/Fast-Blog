@@ -14,7 +14,7 @@ public class DeleteFileDTO {
   @AllArgsConstructor
   public static class Request {
     @NotNull
-    private String originFileName;
+    private String query;
   }
 
 //  @Data

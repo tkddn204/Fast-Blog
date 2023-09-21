@@ -7,5 +7,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface FileRepository extends CrudRepository<FileEntity, UUID> {
+  Optional<FileEntity> findByFileName(UUID fileName);
   Optional<FileEntity> findByOriginFileName(String originFileName);
 }

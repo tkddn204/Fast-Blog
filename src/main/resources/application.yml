@@ -4,5 +4,4 @@ spring:
       - dev
 
 file:
-  dir:
-    - files/
+  dir: ./files/

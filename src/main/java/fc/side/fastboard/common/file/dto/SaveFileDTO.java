@@ -2,10 +2,7 @@ package fc.side.fastboard.common.file.dto;
 
 import fc.side.fastboard.common.file.entity.FileEntity;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
@@ -14,6 +11,7 @@ public class SaveFileDTO {
 
   @Data
   @Builder
+  @ToString
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Request {
@@ -26,6 +24,7 @@ public class SaveFileDTO {
 
   @Data
   @Builder
+  @ToString
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Response {
@@ -34,7 +33,7 @@ public class SaveFileDTO {
 
     public static Response from(FileEntity fileEntity) {
       return Response.builder()
-          .fileName(fileEntity.getFileId())
+          .fileName(fileEntity.getFileName())
           .filePath(fileEntity.getFilePath())
           .build();
     }

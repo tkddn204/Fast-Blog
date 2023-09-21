@@ -19,12 +19,14 @@ import java.util.UUID;
 public class FileEntity {
 
   @Id
-  @org.hibernate.validator.constraints.UUID
-  @GeneratedValue(strategy = GenerationType.UUID)
-  private UUID fileId; // 파일 ID == 서버에 저장된 파일 이름
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
   @NotNull
-  private String originFileName;
+  private UUID fileName; // 서버에 저장된 파일 이름
+
+  @NotNull
+  private String originFileName; // 사용자가 보낸 파일 이름
 
   @NotNull
   private String filePath;

@@ -11,6 +11,7 @@ import fc.side.fastboard.common.file.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -23,39 +24,42 @@ import java.util.UUID;
 public class FileService {
 
   @Value("${file.dir}")
-  private static String FILE_DIR;
+  private String FILE_DIR;
 
   private final FileRepository fileRepository;
 
   public GetFileDTO.Response getFile(GetFileDTO.Request request) {
     String query = request.getQuery();
     // TODO: query 유효성 검사 추가
-    return fileRepository.findById(UUID.fromString(query))
+    return fileRepository.findByFileName(UUID.fromString(query))
         .map(GetFileDTO.Response::fromEntity)
         .orElseThrow(FileNotFoundException::new);
   }
 
+  @Transactional
   public SaveFileDTO.Response saveFile(SaveFileDTO.Request request) {
     fileRepository.findByOriginFileName(request.getOriginFileName())
         .ifPresent(value -> {
           throw new DuplicatedFileException();
         });
 
-    UUID fileId = UUID.randomUUID();
+    UUID fileName = UUID.randomUUID();
     String extension = getFileExtension(request.getOriginFileName());
-    String fileFullPath = getFullFilePath(fileId, extension);
+    String fileFullPath = getFullFilePath(fileName, extension);
 
     saveToFileSystem(request.getMultipartFile(), fileFullPath);
 
     FileEntity fileEntity = FileEntity.builder()
-        .fileId(fileId)
+        .fileName(fileName)
         .originFileName(request.getOriginFileName())
         .filePath(fileFullPath)
         .build();
+    fileRepository.save(fileEntity);
 
     return SaveFileDTO.Response.from(fileEntity);
   }
 
+  @Transactional
   public UpdateFileDTO.Response updateFile(UpdateFileDTO.Request request) {
     FileEntity fileEntity = fileRepository.findByOriginFileName(request.getOriginFileName())
         .orElseThrow(FileNotFoundException::new);
@@ -69,8 +73,10 @@ public class FileService {
     return UpdateFileDTO.Response.from(fileEntity);
   }
 
+  @Transactional
   public void deleteFile(DeleteFileDTO.Request request) {
-    FileEntity fileEntity = fileRepository.findByOriginFileName(request.getOriginFileName())
+    FileEntity fileEntity = fileRepository
+        .findByFileName(UUID.fromString(request.getQuery()))
         .orElseThrow(FileNotFoundException::new);
 
     String fileFullPath = fileEntity.getFilePath();
@@ -78,11 +84,11 @@ public class FileService {
   }
 
   private String getFullFilePath(UUID fileId, String extension) {
-    return Path.of(FILE_DIR, fileId + "." + extension).toString();
+    return Path.of(FILE_DIR, fileId.toString() + "." + extension).toString();
   }
 
   private String getFileExtension(String fileName) {
-    return fileName.substring(fileName.lastIndexOf('.' + 1));
+    return fileName.substring(fileName.lastIndexOf('.') + 1);
   }
 
   private void deleteToFileSystem(String fileFullPath) {

@@ -34,7 +34,7 @@ public class UpdateFileDTO {
 
     public static Response from(FileEntity fileEntity) {
       return Response.builder()
-          .fileName(fileEntity.getFileId())
+          .fileName(fileEntity.getFileName())
           .filePath(fileEntity.getFilePath())
           .build();
     }
