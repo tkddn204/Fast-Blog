@@ -21,12 +21,12 @@
             <div class="col-lg-12">
                 <!-- Post content-->
                 <header class="mb-4">
-                    <h1 class="fw-bolder mb-1">글 작성</h1>
+                    <h1 class="fw-bolder mb-1">글 수정</h1>
                 </header>
                 <form action="" th:action method="post" th:object="${board}">
                     <div class="mb-3">
                         <label class="form-label" for="title">글 제목</label>
-                        <input class="form-control" id="title" type="text"
+                        <input class="form-control" id="title" name="title"
                                th:field="*{title}"
                                th:errorclass="field-error"
                                placeholder="제목을 입력하세요."
@@ -35,12 +35,12 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="content">글 내용</label>
-                        <textarea class="form-control" id="content" rows="3"
+                        <textarea class="form-control" id="content" name="content" rows="3"
                                   th:field="*{content}"
                                   th:errorclass="field-error"
                                   placeholder="내용을 입력하세요."
-                                  th:text="${board?.content}">
-                        </textarea>
+                                  th:text="${board?.content}"
+                        ></textarea>
                     </div>
                     <div class="mb-3">
                         <button type="submit" class="btn btn-primary btn-sm">저장</button>
