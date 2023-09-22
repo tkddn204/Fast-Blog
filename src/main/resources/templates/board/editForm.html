@@ -39,8 +39,9 @@
                                   th:field="*{content}"
                                   th:errorclass="field-error"
                                   placeholder="내용을 입력하세요."
-                                  th:text="${board?.content}"
-                        ></textarea>
+                                  th:text="${board?.content}">
+                        </textarea>
+                        <div class="text-danger" th:errors="*{content}">내용 검증 오류</div>
                     </div>
                     <div class="mb-3">
                         <button type="submit" class="btn btn-primary btn-sm">저장</button>
