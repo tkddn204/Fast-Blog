@@ -42,3 +42,6 @@ out/
 
 ### spring applicaiton setting
 src/**/application-*.yml
+
+### file datastore directory
+files/**
