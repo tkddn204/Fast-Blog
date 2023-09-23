@@ -17,13 +17,17 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
 
     private static final String[] ANONYMOUS_PATHS = {
-            "/user/join",
-            "/login"
+            "/join",
+            "/login",
     };
 
     private static final String[] PERMIT_PATHS = {
             "/",
-            "/boards"
+            "/edit",
+            "/editSuccess",
+            "/joinSuccess",
+            "/boards",
+            "/save/image"
     };
 
     @Bean
@@ -56,7 +60,6 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .usernameParameter("email")
-                        .defaultSuccessUrl("/", true)
                 )
                 .logout(logout -> logout
                         .deleteCookies("JSESSIONID")

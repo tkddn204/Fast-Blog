@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+      layout:decorate="~{layout/layout}"
+      xmlns:th="https://www.thymeleaf.org"
+
+>
+
 >
 <head>
     <meta charset="UTF-8">
@@ -18,44 +22,36 @@
                     <div class="col-12 col-md-9 col-lg-7 col-xl-6">
                         <div class="card" style="border-radius: 15px;">
                             <div class="card-body p-5">
-                                <h2 class="text-uppercase text-center mb-5"> 수정페이지</h2>
+                                <h2 class="text-uppercase text-center mb-5">회원 수정</h2>
+                                <form th:action="@{/edit}"  method="post" enctype="multipart/form-data">
+                                    <input type="hidden" th:value="${updateMember.id}" name="id"/>
 
-                                <form action="/user/join" method="post">
+                                    <div class="d-flex justify-content-around align-items-center mb-2">
+                                        <img th:src="@{'/img/'+${updateMember.fileName}}" alt="no image" style=" max-width: 25%;  height: auto;"> <br />
+                                        <input type="file" name="file"/>
+                                    </div>
                                     <div class="form-outline mb-4">
                                         <label class="form-label" for="form3Example1cg">이름</label>
-                                        <input type="text" id="form3Example1cg" class="form-control form-control-lg" name="userName"/>
+                                        <input type="text" id="form3Example1cg" class="form-control form-control-lg" name="userName" th:value="${updateMember.username}"/>
                                     </div>
-
                                     <div class="form-outline mb-4">
                                         <label class="form-label" for="form3Example3cg">이메일</label>
-                                        <input type="email" id="form3Example3cg" class="form-control form-control-lg" name="userEmail" />
+                                        <input type="email" id="form3Example3cg" class="form-control form-control-lg" name="userEmail" th:value="${updateMember.email}"/>
                                     </div>
-
                                     <div class="form-outline mb-4">
                                         <label class="form-label" for="form3Example4cg">비밀번호</label>
                                         <input type="password" id="form3Example4cg" class="form-control form-control-lg" name="userPassword" />
                                     </div>
-
                                     <div class="form-outline mb-4">
                                         <label class="form-label" for="form3Example4cdg">비밀번호 확인</label>
                                         <input type="password" id="form3Example4cdg" class="form-control form-control-lg" />
                                     </div>
-
-                                    <div class="form-check d-flex justify-content-center mb-5">
-                                        <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3cg" />
-                                        <label class="form-check-label" for="form2Example3g">
-                                            I agree all statements in <a href="#!" class="text-body"><u>Terms of service</u></a>
-                                        </label>
-                                    </div>
-
-                                    <div class="d-flex justify-content-center">
+                                    <div class="d-flex justify-content-around mt-4">
                                         <button type="submit"
-                                                class="w-75 btn btn-primary btn-lg btn-block"> 수정하기 </button>
+                                                class="w-75 btn btn-primary btn-lg btn-block mr-1"> 수정하기 </button>
+                                        <a th:href="@{'/delete/'+${updateMember.email}}"
+                                                   class="w-75 btn btn-danger btn-lg btn-block ml-1"> 탈퇴하기 </a>
                                     </div>
-
-                                    <p class="text-center text-muted mt-5 mb-0">Have already an account? <a href="#!"
-                                                                                                            class="fw-bold text-body"><u>Login here</u></a></p>
-
                                 </form>
 
                             </div>

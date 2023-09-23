@@ -1,15 +1,15 @@
 package fc.side.fastboard.user.controller;
 
 import fc.side.fastboard.user.dto.MemberDto;
+import fc.side.fastboard.user.entity.User;
 import fc.side.fastboard.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.security.Principal;
 
 @Slf4j
 @Controller
@@ -18,40 +18,54 @@ public class UserController {
 
     private final UserService userService;
 
-
-
-    @GetMapping("/user/login")
-    public String memberLoginPage(){
-        return "user/loginForm";
-    }
-
-
-    @GetMapping("/user/join")
+    @GetMapping("/join")
     public String newMemberPage(){
-        return "user/joinForm";
+        return "user/join";
     }
 
-    @PostMapping("/user/join")
-    public String createMemberJoin(MemberDto.Request formData){
-        MemberDto.Response response = userService.saveNewMember(formData);
-        System.out.println("=======================");
-        System.out.println(response + "is saved");
-        return "redirect:/";
+    @PostMapping("/join")
+    public String createMemberJoin(
+            @RequestPart (value = "file",required = false) MultipartFile multipartFile,
+            @ModelAttribute MemberDto.Request formData
+    ) {
+        MemberDto.Response response = userService.saveNewMember(multipartFile, formData);
+        return "redirect:/joinSuccess";
     }
 
-    @GetMapping("/user/edit")
-    public String editPage(Model model){
-        model.addAttribute("1", "memberId");
-        return "user/editForm";
+    @GetMapping("/joinSuccess")
+    public String successNewMemberPage(){
+        return "user/joinSuccess";
     }
 
-    @PutMapping("/user/edit")
+    @GetMapping("/edit")
+    public String editPage(Principal principal, Model model){
+        User userInfo = userService.findByEmail(principal.getName());
+        model.addAttribute("updateMember", userInfo);
+        return "user/edit";
+    }
+
+    @PostMapping("/edit")
     public String editMemberInfo(
-            @PathVariable Integer memberId,
-            Model model
-    ){
-        System.out.println(memberId);
-
-        return "index";
+            @RequestPart (value = "file",required = false) MultipartFile multipartFile,
+            @ModelAttribute MemberDto.Request formData
+    ) {
+        MemberDto.Response response = userService.updateMemberInfo(multipartFile,formData);
+        return "redirect:/editSuccess";
     }
+
+    @GetMapping("/editSuccess")
+    public String successEditMemberPage(){
+        return "user/editSuccess";
+    }
+
+    @GetMapping("/delete/{email}")
+    public String deleteMember(@PathVariable String email){
+        userService.deleteMember(email);
+        return "user/deleteSuccess";
+    }
+
 }
+
+
+
+
