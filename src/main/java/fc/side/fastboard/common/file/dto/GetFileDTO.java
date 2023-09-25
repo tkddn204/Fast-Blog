@@ -24,13 +24,13 @@ public class GetFileDTO {
   @Builder
   public static class Response {
 
-    private UUID fileName;
+    private UUID fileId;
     private String originFileName;
     private String filePath;
 
     public static GetFileDTO.Response fromEntity(FileEntity fileEntity) {
       return Response.builder()
-          .fileName(fileEntity.getFileName())
+          .fileId(fileEntity.getFileName())
           .originFileName(fileEntity.getOriginFileName())
           .filePath(fileEntity.getFilePath())
           .build();

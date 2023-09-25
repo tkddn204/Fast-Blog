@@ -29,8 +29,7 @@
                         <input class="form-control" id="title" type="text"
                                th:field="*{title}"
                                th:errorclass="field-error"
-                               placeholder="제목을 입력하세요."
-                               th:value="${board?.title}">
+                               placeholder="제목을 입력하세요.">
                         <div class="text-danger" th:errors="*{title}">제목 검증 오류</div>
                     </div>
                     <div class="mb-3">
@@ -38,8 +37,7 @@
                         <textarea class="form-control" id="content" rows="3"
                                   th:field="*{content}"
                                   th:errorclass="field-error"
-                                  placeholder="내용을 입력하세요."
-                                  th:text="${board?.content}">
+                                  placeholder="내용을 입력하세요.">
                         </textarea>
                         <div class="text-danger" th:errors="*{content}">내용 검증 오류</div>
                     </div>

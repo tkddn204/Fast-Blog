@@ -6,6 +6,8 @@ import fc.side.fastboard.board.dto.EditBoardDTO;
 import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.service.BoardService;
 import fc.side.fastboard.board.util.PageNumber;
+import fc.side.fastboard.common.file.dto.GetFileDTO;
+import fc.side.fastboard.common.file.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class BoardController {
 
   private final BoardService boardService;
+  private final FileService fileService;
 
   @GetMapping("/")
   public String index(
@@ -79,11 +82,15 @@ public class BoardController {
   @GetMapping("/board/editForm/{boardId}")
   public String editForm(
       @PathVariable Integer boardId,
-      @ModelAttribute("board") EditBoardDTO editBoardDTO,
       Model model
   ) {
     Board findBoard = boardService.getBoardById(boardId);
+    GetFileDTO.Response response = fileService.getFile(
+        GetFileDTO.Request.builder().query(findBoard.getFileId().toString()).build()
+    );
     model.addAttribute("board", findBoard);
+    model.addAttribute("fileId", response.getFileId().toString());
+    model.addAttribute("fileName", response.getOriginFileName());
     return "board/editForm";
   }
 

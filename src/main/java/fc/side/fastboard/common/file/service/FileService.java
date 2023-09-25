@@ -85,7 +85,7 @@ public class FileService {
           .build()
       );
       FileEntity newFileEntity = FileEntity.builder()
-          .fileName(response.getFileName())
+          .fileName(response.getFileId())
           .originFileName(request.getOriginFileName())
           .filePath(response.getFilePath())
           .build();

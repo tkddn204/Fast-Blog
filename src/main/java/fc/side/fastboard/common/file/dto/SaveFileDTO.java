@@ -28,13 +28,13 @@ public class SaveFileDTO {
   @NoArgsConstructor
   @AllArgsConstructor
   public static class Response {
-    private UUID fileName;
+    private UUID fileId;
     private String originalFileName;
     private String filePath;
 
     public static Response from(FileEntity fileEntity) {
       return Response.builder()
-          .fileName(fileEntity.getFileName())
+          .fileId(fileEntity.getFileName())
           .originalFileName(fileEntity.getOriginFileName())
           .filePath(fileEntity.getFilePath())
           .build();

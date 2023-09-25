@@ -78,7 +78,7 @@ class FileServiceTest {
         .multipartFile(mockMultipartFile)
         .build();
     SaveFileDTO.Response saveResponse = fileService.saveFile(saveRequest);
-    String fileName = saveResponse.getFileName().toString();
+    String fileName = saveResponse.getFileId().toString();
     GetFileDTO.Request request = GetFileDTO.Request.builder()
         .query(fileName)
         .build();
@@ -89,7 +89,7 @@ class FileServiceTest {
     // then
     File actualFile = new File(response.getFilePath());
     actualFile.deleteOnExit();
-    assertEquals(saveResponse.getFileName(), response.getFileName());
+    assertEquals(saveResponse.getFileId(), response.getFileId());
     assertEquals(testFileName, response.getOriginFileName());
     assertTrue(Files.isSameFile(
         Path.of(response.getFilePath()), Path.of(actualFile.getPath())
@@ -135,7 +135,7 @@ class FileServiceTest {
     // then
     File actualFile = new File(getUpdatedFileResponse.getFilePath());
     actualFile.deleteOnExit();
-    assertEquals(response.getFileId(), getUpdatedFileResponse.getFileName());
+    assertEquals(response.getFileId(), getUpdatedFileResponse.getFileId());
     assertEquals(testUpdateFileName, getUpdatedFileResponse.getOriginFileName());
     assertTrue(Files.isSameFile(
         Path.of(response.getFilePath()), Path.of(actualFile.getPath())
@@ -157,13 +157,13 @@ class FileServiceTest {
         .multipartFile(mockMultipartFile)
         .build();
     SaveFileDTO.Response saveResponse = fileService.saveFile(saveRequest);
-    String fileName = saveResponse.getFileName().toString();
+    String fileName = saveResponse.getFileId().toString();
     GetFileDTO.Request getRequest = GetFileDTO.Request.builder()
         .query(fileName)
         .build();
     GetFileDTO.Response getResponse = fileService.getFile(getRequest);
     DeleteFileDTO.Request request = DeleteFileDTO.Request.builder()
-        .query(getResponse.getFileName().toString())
+        .query(getResponse.getFileId().toString())
         .build();
 
     // when

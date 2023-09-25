@@ -8,6 +8,7 @@ import fc.side.fastboard.board.repository.BoardRepository;
 import fc.side.fastboard.common.exception.BoardException;
 import fc.side.fastboard.common.file.dto.GetFileDTO;
 import fc.side.fastboard.common.file.dto.SaveFileDTO;
+import fc.side.fastboard.common.file.dto.UpdateFileDTO;
 import fc.side.fastboard.common.file.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,7 +44,7 @@ public class BoardService {
       GetFileDTO.Response response = fileService.getFile(
           GetFileDTO.Request.builder().query(board.getFileId().toString()).build()
       );
-      return BoardDetailDTO.fromEntity(board, response.getFileName().toString());
+      return BoardDetailDTO.fromEntity(board, response.getFileId().toString());
     } else {
       return BoardDetailDTO.fromEntity(board);
     }
@@ -51,7 +52,7 @@ public class BoardService {
 
   @Transactional
   public BoardDetailDTO createBoard(CreateBoardDTO boardDto) {
-    if (boardDto.getFile().isEmpty()) {
+    if (boardDto.getFile() == null || boardDto.getFile().isEmpty()) {
       Board newBoard = Optional.of(boardDto)
           .map(CreateBoardDTO::toEntity)
           .map(boardRepository::save)
@@ -65,7 +66,7 @@ public class BoardService {
           .build()
       );
       Board newBoard = Optional.of(boardDto)
-          .map(dto -> CreateBoardDTO.toEntity(dto, response.getFileName()))
+          .map(dto -> CreateBoardDTO.toEntity(dto, response.getFileId()))
           .map(boardRepository::save)
           .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
       return BoardDetailDTO.fromEntity(newBoard, response.getOriginalFileName());
@@ -77,6 +78,17 @@ public class BoardService {
     Board foundBoard = getBoardById(id);
     foundBoard.setTitle(boardDto.getTitle());
     foundBoard.setContent(boardDto.getContent());
+    if (boardDto.getFile() != null && boardDto.getFile().isEmpty()) {
+      GetFileDTO.Response fileResponse = fileService.getFile(
+          GetFileDTO.Request.builder().query(boardDto.getFile().getOriginalFilename()).build()
+      );
+      fileService.updateFile(UpdateFileDTO.Request.builder()
+          .fileId(fileResponse.getFileId())
+          .originFileName(boardDto.getFile().getOriginalFilename())
+          .multipartFile(boardDto.getFile())
+          .build()
+      );
+    }
   }
 
   @Transactional

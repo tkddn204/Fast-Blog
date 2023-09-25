@@ -23,11 +23,10 @@
                 <header class="mb-4">
                     <h1 class="fw-bolder mb-1">글 수정</h1>
                 </header>
-                <form action="" th:action method="post" th:object="${board}">
+                <form action="" th:action method="post" th:object="${board}" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label class="form-label" for="title">글 제목</label>
                         <input class="form-control" id="title" name="title"
-                               th:field="*{title}"
                                th:errorclass="field-error"
                                placeholder="제목을 입력하세요."
                                th:value="${board?.title}">
@@ -36,12 +35,19 @@
                     <div class="mb-3">
                         <label class="form-label" for="content">글 내용</label>
                         <textarea class="form-control" id="content" name="content" rows="3"
-                                  th:field="*{content}"
                                   th:errorclass="field-error"
                                   placeholder="내용을 입력하세요."
                                   th:text="${board?.content}">
                         </textarea>
                         <div class="text-danger" th:errors="*{content}">내용 검증 오류</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="file">이미지 업로드</label>
+                        <input class="form-control" name="fileId"
+                               th:errorclass="field-error"
+                               type="file"
+                               id="file"
+                               th:value="${fileName}">
                     </div>
                     <div class="mb-3">
                         <button type="submit" class="btn btn-primary btn-sm">저장</button>
