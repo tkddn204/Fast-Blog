@@ -1,5 +1,6 @@
 package fc.side.fastboard.common.file.service;
 
+import fc.side.fastboard.common.exception.InvalidParamException;
 import fc.side.fastboard.common.file.dto.DeleteFileDTO;
 import fc.side.fastboard.common.file.dto.GetFileDTO;
 import fc.side.fastboard.common.file.dto.SaveFileDTO;
@@ -10,6 +11,7 @@ import fc.side.fastboard.common.file.exception.FileDeleteException;
 import fc.side.fastboard.common.file.exception.FileNotFoundException;
 import fc.side.fastboard.common.file.exception.FileSaveException;
 import fc.side.fastboard.common.file.repository.FileRepository;
+import fc.side.fastboard.common.file.util.QueryCheck;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -31,11 +35,19 @@ public class FileService {
   private final FileRepository fileRepository;
 
   public GetFileDTO.Response getFile(GetFileDTO.Request request) {
-    String query = request.getQuery();
+    String query = URI.create(request.getQuery()).toString();
+    if (query == null || query.isEmpty()) {
+      throw new InvalidParamException();
+    }
 
-    return fileRepository.findByFileName(UUID.fromString(query))
-        .map(GetFileDTO.Response::fromEntity)
-        .orElseThrow(FileNotFoundException::new);
+    return switch (QueryCheck.check(query)) {
+      case UUID_TYPE -> fileRepository.findByFileName(UUID.fromString(query))
+            .map(GetFileDTO.Response::fromEntity)
+            .orElseThrow(FileNotFoundException::new);
+      case ORIGIN_FILE_NAME_TYPE -> fileRepository.findByOriginFileName(query)
+          .map(GetFileDTO.Response::fromEntity)
+          .orElseThrow(FileNotFoundException::new);
+    };
   }
 
   @Transactional

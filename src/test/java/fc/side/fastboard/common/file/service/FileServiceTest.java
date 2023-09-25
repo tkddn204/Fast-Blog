@@ -128,14 +128,14 @@ class FileServiceTest {
     UpdateFileDTO.Response response = fileService.updateFile(updateRequest);
 
     GetFileDTO.Request request = GetFileDTO.Request.builder()
-        .query(response.getFileName().toString())
+        .query(response.getFileId().toString())
         .build();
     GetFileDTO.Response getUpdatedFileResponse = fileService.getFile(request);
 
     // then
     File actualFile = new File(getUpdatedFileResponse.getFilePath());
     actualFile.deleteOnExit();
-    assertEquals(response.getFileName(), getUpdatedFileResponse.getFileName());
+    assertEquals(response.getFileId(), getUpdatedFileResponse.getFileName());
     assertEquals(testUpdateFileName, getUpdatedFileResponse.getOriginFileName());
     assertTrue(Files.isSameFile(
         Path.of(response.getFilePath()), Path.of(actualFile.getPath())

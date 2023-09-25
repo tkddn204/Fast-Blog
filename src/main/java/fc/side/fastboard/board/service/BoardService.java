@@ -38,7 +38,15 @@ public class BoardService {
 
   @Transactional
   public BoardDetailDTO findBoardById(int id) {
-    return BoardDetailDTO.fromEntity(getBoardById(id));
+    Board board = getBoardById(id);
+    if (board.getFileId() != null) {
+      GetFileDTO.Response response = fileService.getFile(
+          GetFileDTO.Request.builder().query(board.getFileId().toString()).build()
+      );
+      return BoardDetailDTO.fromEntity(board, response.getFileName().toString());
+    } else {
+      return BoardDetailDTO.fromEntity(board);
+    }
   }
 
   @Transactional
