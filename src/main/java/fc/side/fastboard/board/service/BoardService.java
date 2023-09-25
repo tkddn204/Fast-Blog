@@ -6,6 +6,9 @@ import fc.side.fastboard.board.dto.EditBoardDTO;
 import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.repository.BoardRepository;
 import fc.side.fastboard.common.exception.BoardException;
+import fc.side.fastboard.common.file.dto.GetFileDTO;
+import fc.side.fastboard.common.file.dto.SaveFileDTO;
+import fc.side.fastboard.common.file.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +24,7 @@ import static fc.side.fastboard.common.exception.BoardErrorCode.*;
 public class BoardService {
 
   private final BoardRepository boardRepository;
+  private final FileService fileService;
 
   @Transactional
   public Page<BoardDetailDTO> findAllBoards(Pageable pageable) {
@@ -39,12 +43,25 @@ public class BoardService {
 
   @Transactional
   public BoardDetailDTO createBoard(CreateBoardDTO boardDto) {
-    Board newBoard = Optional.of(boardDto)
-        .map(CreateBoardDTO::toEntity)
-        .map(boardRepository::save)
-        .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
+    if (boardDto.getFile().isEmpty()) {
+      Board newBoard = Optional.of(boardDto)
+          .map(CreateBoardDTO::toEntity)
+          .map(boardRepository::save)
+          .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
 
-    return BoardDetailDTO.fromEntity(newBoard);
+      return BoardDetailDTO.fromEntity(newBoard);
+    } else {
+      SaveFileDTO.Response response = fileService.saveFile(SaveFileDTO.Request.builder()
+          .originFileName(boardDto.getFile().getOriginalFilename())
+          .multipartFile(boardDto.getFile())
+          .build()
+      );
+      Board newBoard = Optional.of(boardDto)
+          .map(dto -> CreateBoardDTO.toEntity(dto, response.getFileName()))
+          .map(boardRepository::save)
+          .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
+      return BoardDetailDTO.fromEntity(newBoard, response.getOriginalFileName());
+    }
   }
 
   @Transactional

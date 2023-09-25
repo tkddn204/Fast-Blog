@@ -60,7 +60,8 @@ public class BoardController {
 
   @PostMapping("/board/addForm")
   public String addBoard(
-      @Validated @ModelAttribute("board") CreateBoardDTO boardDto,
+      @Validated
+      @ModelAttribute("board") CreateBoardDTO boardDto,
       BindingResult bindingResult,  //ModelAttribute 뒤에 써야됩니다.
       RedirectAttributes redirectAttributes
   ) {

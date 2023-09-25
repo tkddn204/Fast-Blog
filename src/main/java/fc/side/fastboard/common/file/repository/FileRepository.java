@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface FileRepository extends CrudRepository<FileEntity, UUID> {
+public interface FileRepository extends CrudRepository<FileEntity, Integer> {
   Optional<FileEntity> findByFileName(UUID fileName);
   Optional<FileEntity> findByOriginFileName(String originFileName);
 }

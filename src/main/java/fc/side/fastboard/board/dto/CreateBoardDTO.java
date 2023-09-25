@@ -4,21 +4,20 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import fc.side.fastboard.board.entity.Board;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
+import java.io.Serializable;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CreateBoardDTO {
+public class CreateBoardDTO implements Serializable {
 
 //    @NotNull
     private Integer writerId;
@@ -30,11 +29,22 @@ public class CreateBoardDTO {
     @NotBlank
     private String content;
 
+    private MultipartFile file;
+
     public static Board toEntity(CreateBoardDTO boardDto) {
+      return Board.builder()
+          .writerId(boardDto.getWriterId())
+          .title(boardDto.getTitle())
+          .content(boardDto.getContent())
+          .build();
+    }
+
+    public static Board toEntity(CreateBoardDTO boardDto, UUID fileId) {
         return Board.builder()
                 .writerId(boardDto.getWriterId())
                 .title(boardDto.getTitle())
                 .content(boardDto.getContent())
+                .fileId(fileId)
                 .build();
     }
 }

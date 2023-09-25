@@ -9,6 +9,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -30,6 +31,8 @@ public class Board {
 
     @Column(length = 50000)
     private String content;
+
+    private UUID fileId;
 
     @CreatedDate
     private LocalDateTime createdAt;
