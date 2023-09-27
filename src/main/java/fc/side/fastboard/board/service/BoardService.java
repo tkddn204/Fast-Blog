@@ -6,6 +6,10 @@ import fc.side.fastboard.board.dto.EditBoardDTO;
 import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.repository.BoardRepository;
 import fc.side.fastboard.common.exception.BoardException;
+import fc.side.fastboard.common.file.dto.GetFileDTO;
+import fc.side.fastboard.common.file.dto.SaveFileDTO;
+import fc.side.fastboard.common.file.dto.UpdateFileDTO;
+import fc.side.fastboard.common.file.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +25,7 @@ import static fc.side.fastboard.common.exception.BoardErrorCode.*;
 public class BoardService {
 
   private final BoardRepository boardRepository;
+  private final FileService fileService;
 
   @Transactional
   public Page<BoardDetailDTO> findAllBoards(Pageable pageable) {
@@ -34,17 +39,38 @@ public class BoardService {
 
   @Transactional
   public BoardDetailDTO findBoardById(int id) {
-    return BoardDetailDTO.fromEntity(getBoardById(id));
+    Board board = getBoardById(id);
+    if (board.getFileId() != null) {
+      GetFileDTO.Response response = fileService.getFile(
+          GetFileDTO.Request.builder().query(board.getFileId().toString()).build()
+      );
+      return BoardDetailDTO.fromEntity(board, response.getFileId().toString());
+    } else {
+      return BoardDetailDTO.fromEntity(board);
+    }
   }
 
   @Transactional
   public BoardDetailDTO createBoard(CreateBoardDTO boardDto) {
-    Board newBoard = Optional.of(boardDto)
-        .map(CreateBoardDTO::toEntity)
-        .map(boardRepository::save)
-        .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
+    if (boardDto.getFile() == null || boardDto.getFile().isEmpty()) {
+      Board newBoard = Optional.of(boardDto)
+          .map(CreateBoardDTO::toEntity)
+          .map(boardRepository::save)
+          .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
 
-    return BoardDetailDTO.fromEntity(newBoard);
+      return BoardDetailDTO.fromEntity(newBoard);
+    } else {
+      SaveFileDTO.Response response = fileService.saveFile(SaveFileDTO.Request.builder()
+          .originFileName(boardDto.getFile().getOriginalFilename())
+          .multipartFile(boardDto.getFile())
+          .build()
+      );
+      Board newBoard = Optional.of(boardDto)
+          .map(dto -> CreateBoardDTO.toEntity(dto, response.getFileId()))
+          .map(boardRepository::save)
+          .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
+      return BoardDetailDTO.fromEntity(newBoard, response.getOriginalFileName());
+    }
   }
 
   @Transactional
@@ -52,6 +78,17 @@ public class BoardService {
     Board foundBoard = getBoardById(id);
     foundBoard.setTitle(boardDto.getTitle());
     foundBoard.setContent(boardDto.getContent());
+    if (boardDto.getFile() != null && boardDto.getFile().isEmpty()) {
+      GetFileDTO.Response fileResponse = fileService.getFile(
+          GetFileDTO.Request.builder().query(boardDto.getFile().getOriginalFilename()).build()
+      );
+      fileService.updateFile(UpdateFileDTO.Request.builder()
+          .fileId(fileResponse.getFileId())
+          .originFileName(boardDto.getFile().getOriginalFilename())
+          .multipartFile(boardDto.getFile())
+          .build()
+      );
+    }
   }
 
   @Transactional

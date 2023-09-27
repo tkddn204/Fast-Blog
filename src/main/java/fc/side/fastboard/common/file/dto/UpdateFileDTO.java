@@ -1,0 +1,46 @@
+package fc.side.fastboard.common.file.dto;
+
+import fc.side.fastboard.common.file.entity.FileEntity;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
+
+public class UpdateFileDTO {
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class Request {
+
+    @NotNull
+    private UUID fileId;
+
+    @NotNull
+    private String originFileName;
+
+    @NotNull
+    private MultipartFile multipartFile;
+  }
+
+  @Data
+  @Builder
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class Response {
+    private UUID fileId;
+    private String filePath;
+
+    public static Response from(FileEntity fileEntity) {
+      return Response.builder()
+          .fileId(fileEntity.getFileName())
+          .filePath(fileEntity.getFilePath())
+          .build();
+    }
+  }
+}
