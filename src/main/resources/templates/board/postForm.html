@@ -3,16 +3,6 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
-<head>
-    <meta charset="utf-8">
-    <link th:href="@{/css/styles.css}"
-          href="../css/style.css" rel="stylesheet">
-    <style>
-        .field-error {
-            border-bottom-color: #0a53be;
-        }
-    </style>
-</head>
 <body>
 <!-- Page content-->
 <div layout:fragment="content">
@@ -42,12 +32,20 @@
                         <div class="text-danger" th:errors="*{content}">내용 검증 오류</div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label" for="file">이미지 업로드</label>
-                        <input class="form-control"
-                               th:field="*{file}"
-                               th:errorclass="field-error"
-                               type="file"
-                               id="file">
+                        <label class="form-label">이미지 업로드</label>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <label class="btn-file-select btn btn-outline-secondary" for="file">파일 선택</label>
+                                <button type="button" class="btn-file-delete btn btn-danger" onclick="onClickDeleteFile()">삭제</button>
+                            </div>
+                            <span class="btn-file-select-text input-group-text"></span>
+                            <input class="form-control custom-file-input" name="file"
+                                   th:field="*{file}"
+                                   th:errorclass="field-error"
+                                   onchange="onChangeFileInput(this)"
+                                   type="file"
+                                   id="file">
+                        </div>
                     </div>
                     <div class="mb-3">
                         <button type="submit" class="btn btn-primary btn-sm">저장</button>
@@ -58,5 +56,32 @@
         </div>
     </div>
 </div>
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+        const fileDeleteButton = document.querySelector(".btn-file-delete");
+        const fileSelectButton = document.querySelector(".btn-file-select");
+        const fileSelectText = document.querySelector(".btn-file-select-text");
+        function onChangeFileInput(fileInputElement) {
+            const value = fileInputElement.value;
+            if (value) {
+                fileDeleteButton.classList.remove('btn-file-delete');
+                fileSelectButton.style.display = 'none';
+            } else {
+                fileDeleteButton.classList.add('btn-file-delete');
+                fileSelectButton.style.display = 'block';
+            }
+            fileSelectText.textContent = value;
+            fileSelectHiddenName.value = value;
+        }
+
+        function onClickDeleteFile() {
+            if (confirm("파일을 삭제하시겠습니까?")) {
+                const fileInputElement = document.querySelector("#file");
+                fileInputElement.value = "";
+                onChangeFileInput(fileInputElement);
+            }
+        }
+    </script>
+</th:block>
 </body>
 </html>

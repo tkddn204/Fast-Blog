@@ -20,11 +20,13 @@ public class FileController {
 
   private final FileService fileService;
 
-  @GetMapping("/images/{fileId}")
+  @GetMapping("/images/{storedFileName}")
   @ResponseBody
-  public Resource getImage(@PathVariable("fileId") String fileId) throws MalformedURLException {
+  public Resource getImage(
+      @PathVariable("storedFileName") String storedFileName
+  ) throws MalformedURLException {
     return new UrlResource("file:" + fileService.getFile(
-        GetFileDTO.Request.builder().query(fileId).build()
+        GetFileDTO.Request.builder().storedFileName(storedFileName).build()
     ).getFilePath());
   }
 }

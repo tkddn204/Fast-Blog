@@ -9,7 +9,6 @@ import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -39,12 +38,12 @@ public class CreateBoardDTO implements Serializable {
           .build();
     }
 
-    public static Board toEntity(CreateBoardDTO boardDto, UUID fileId) {
+    public static Board toEntity(CreateBoardDTO boardDto, String fileName) {
         return Board.builder()
                 .writerId(boardDto.getWriterId())
                 .title(boardDto.getTitle())
                 .content(boardDto.getContent())
-                .fileId(fileId)
+                .storedFileName(fileName)
                 .build();
     }
 }

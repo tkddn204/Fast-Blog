@@ -20,7 +20,7 @@ public class BoardDetailDTO{
   private Integer writerId;
   private String title;
   private String content;
-  private String fileId;
+  private String fileName;
 
   private LocalDateTime createdAt;
   private Integer hit;
@@ -36,12 +36,12 @@ public class BoardDetailDTO{
             .build();
   }
 
-  public static BoardDetailDTO fromEntity(Board board, String fileId) {
+  public static BoardDetailDTO fromEntity(Board board, String fileName) {
     return BoardDetailDTO.builder()
         .id(board.getId())
         .writerId(board.getWriterId())
         .title(board.getTitle())
-        .fileId(fileId)
+        .fileName(fileName)
         .content(board.getContent())
         .createdAt(board.getCreatedAt())
         .hit(board.getHit())

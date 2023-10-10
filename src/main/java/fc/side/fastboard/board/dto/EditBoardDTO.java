@@ -25,5 +25,6 @@ public class EditBoardDTO implements Serializable {
     @NotBlank
     private String content;
 
+    private String fileName;
     private MultipartFile file;
 }

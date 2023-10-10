@@ -1,14 +1,10 @@
 package fc.side.fastboard.common.file.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import fc.side.fastboard.common.entity.BaseTimeEntity;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -16,14 +12,14 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Entity
-public class FileEntity {
+public class FileEntity extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   @NotNull
-  private UUID fileName; // 서버에 저장된 파일 이름
+  private String storedFileName; // 서버에 저장된 파일 이름
 
   @NotNull
   private String originFileName; // 사용자가 보낸 파일 이름
