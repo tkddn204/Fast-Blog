@@ -2,3 +2,6 @@ spring:
   profiles:
     active:
       - dev
+
+file:
+  dir: ./files/
