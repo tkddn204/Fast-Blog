@@ -26,6 +26,7 @@ class FileServiceTest {
 
   private static final String TEST_FILE_NAME = "test_image_";
   private static final String TEST_FILE_EXT = ".png";
+  private static final String TEST_FILE_CONTENT_TYPE = "image/png";
 
   private static String TEST_FILE_DIR;
 
@@ -44,11 +45,12 @@ class FileServiceTest {
     String testFileName = TEST_FILE_NAME + 1 + TEST_FILE_EXT;
     File testImageFile = Path.of(TEST_FILE_DIR, testFileName).toFile();
     MockMultipartFile mockMultipartFile = new MockMultipartFile(
+        TEST_FILE_NAME,
         testFileName,
+        TEST_FILE_CONTENT_TYPE,
         new FileInputStream(testImageFile)
     );
     SaveFileDTO.Request request = SaveFileDTO.Request.builder()
-        .originFileName(testFileName)
         .multipartFile(mockMultipartFile)
         .build();
 
@@ -70,17 +72,18 @@ class FileServiceTest {
     String testFileName = TEST_FILE_NAME + 2 + TEST_FILE_EXT;
     File testImageFile = Path.of(TEST_FILE_DIR, testFileName).toFile();
     MockMultipartFile mockMultipartFile = new MockMultipartFile(
+        TEST_FILE_NAME,
         testFileName,
+        TEST_FILE_CONTENT_TYPE,
         new FileInputStream(testImageFile)
     );
     SaveFileDTO.Request saveRequest = SaveFileDTO.Request.builder()
-        .originFileName(testFileName)
         .multipartFile(mockMultipartFile)
         .build();
     SaveFileDTO.Response saveResponse = fileService.saveFile(saveRequest);
-    String fileName = saveResponse.getFileName().toString();
+    String storedFileName = saveResponse.getStoredFileName();
     GetFileDTO.Request request = GetFileDTO.Request.builder()
-        .query(fileName)
+        .storedFileName(storedFileName)
         .build();
 
     // when
@@ -89,7 +92,7 @@ class FileServiceTest {
     // then
     File actualFile = new File(response.getFilePath());
     actualFile.deleteOnExit();
-    assertEquals(saveResponse.getFileName(), response.getFileName());
+    assertEquals(saveResponse.getStoredFileName(), response.getStoredFileName());
     assertEquals(testFileName, response.getOriginFileName());
     assertTrue(Files.isSameFile(
         Path.of(response.getFilePath()), Path.of(actualFile.getPath())
@@ -102,25 +105,29 @@ class FileServiceTest {
     // given
     String testFileName = TEST_FILE_NAME + 3 + TEST_FILE_EXT;
     String testUpdateFileName = TEST_FILE_NAME + 4 + TEST_FILE_EXT;
-
+    
+    // 3번 파일을 저장한다
     File testImageFile = Path.of(TEST_FILE_DIR, testFileName).toFile();
     MockMultipartFile mockMultipartFile = new MockMultipartFile(
+        TEST_FILE_NAME,
         testFileName,
+        TEST_FILE_CONTENT_TYPE,
         new FileInputStream(testImageFile)
     );
     SaveFileDTO.Request saveRequest = SaveFileDTO.Request.builder()
-        .originFileName(testFileName)
         .multipartFile(mockMultipartFile)
         .build();
     fileService.saveFile(saveRequest);
 
+    // 3번 파일을 수정하는 요청을 만든다
     File testUpdateImageFile = Path.of(TEST_FILE_DIR, testUpdateFileName).toFile();
     MockMultipartFile mockUpdateMultipartFile = new MockMultipartFile(
+        TEST_FILE_NAME,
         testUpdateFileName,
+        TEST_FILE_CONTENT_TYPE,
         new FileInputStream(testUpdateImageFile)
     );
     UpdateFileDTO.Request updateRequest = UpdateFileDTO.Request.builder()
-        .originFileName(testFileName)
         .multipartFile(mockUpdateMultipartFile)
         .build();
 
@@ -128,14 +135,14 @@ class FileServiceTest {
     UpdateFileDTO.Response response = fileService.updateFile(updateRequest);
 
     GetFileDTO.Request request = GetFileDTO.Request.builder()
-        .query(response.getFileName().toString())
+        .storedFileName(response.getStoredFileName())
         .build();
     GetFileDTO.Response getUpdatedFileResponse = fileService.getFile(request);
 
     // then
     File actualFile = new File(getUpdatedFileResponse.getFilePath());
     actualFile.deleteOnExit();
-    assertEquals(response.getFileName(), getUpdatedFileResponse.getFileName());
+    assertEquals(response.getStoredFileName(), getUpdatedFileResponse.getStoredFileName());
     assertEquals(testUpdateFileName, getUpdatedFileResponse.getOriginFileName());
     assertTrue(Files.isSameFile(
         Path.of(response.getFilePath()), Path.of(actualFile.getPath())
@@ -148,29 +155,30 @@ class FileServiceTest {
     // given
     String testFileName = TEST_FILE_NAME + 5 + TEST_FILE_EXT;
     File testImageFile = Path.of(TEST_FILE_DIR, testFileName).toFile();
+
+    // 5번 파일을 만든다
     MockMultipartFile mockMultipartFile = new MockMultipartFile(
+        TEST_FILE_NAME,
         testFileName,
+        TEST_FILE_CONTENT_TYPE,
         new FileInputStream(testImageFile)
     );
     SaveFileDTO.Request saveRequest = SaveFileDTO.Request.builder()
-        .originFileName(testFileName)
         .multipartFile(mockMultipartFile)
         .build();
     SaveFileDTO.Response saveResponse = fileService.saveFile(saveRequest);
-    String fileName = saveResponse.getFileName().toString();
-    GetFileDTO.Request getRequest = GetFileDTO.Request.builder()
-        .query(fileName)
-        .build();
-    GetFileDTO.Response getResponse = fileService.getFile(getRequest);
+
+    // 5번 파일의 storedFileName을 받아온다
+    String fileName = saveResponse.getStoredFileName();
     DeleteFileDTO.Request request = DeleteFileDTO.Request.builder()
-        .query(getResponse.getFileName().toString())
+        .storedFileName(fileName)
         .build();
 
     // when
     fileService.deleteFile(request);
 
     // then
-    File actualFile = new File(getResponse.getFilePath());
+    File actualFile = new File(fileName);
     assertFalse(actualFile.exists());
   }
 }

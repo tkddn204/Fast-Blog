@@ -29,10 +29,16 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String username;
 
+    @Column
+    private String fileName;
+
     @Builder
-    public User(String email, String password, String username) {
+    public User(Long id, String email, String password, String username, String fileName) {
+        this.id  = id;
         this.email = email;
         this.password = password;
         this.username = username;
+        this.fileName = fileName;
     }
+
 }

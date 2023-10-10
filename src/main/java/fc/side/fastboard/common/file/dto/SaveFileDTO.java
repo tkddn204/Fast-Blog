@@ -1,11 +1,11 @@
 package fc.side.fastboard.common.file.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import fc.side.fastboard.common.file.entity.FileEntity;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.UUID;
 
 public class SaveFileDTO {
 
@@ -14,10 +14,8 @@ public class SaveFileDTO {
   @ToString
   @NoArgsConstructor
   @AllArgsConstructor
+  @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
   public static class Request {
-    @NotNull
-    private String originFileName;
-
     @NotNull
     private MultipartFile multipartFile;
   }
@@ -27,13 +25,16 @@ public class SaveFileDTO {
   @ToString
   @NoArgsConstructor
   @AllArgsConstructor
+  @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
   public static class Response {
-    private UUID fileName;
+    private String storedFileName;
+    private String originalFileName;
     private String filePath;
 
     public static Response from(FileEntity fileEntity) {
       return Response.builder()
-          .fileName(fileEntity.getFileName())
+          .storedFileName(fileEntity.getStoredFileName())
+          .originalFileName(fileEntity.getOriginFileName())
           .filePath(fileEntity.getFilePath())
           .build();
     }

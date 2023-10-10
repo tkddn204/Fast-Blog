@@ -27,6 +27,9 @@
             로그아웃
           </button>
         </form>
+        <li class="nav-item" sec:authorize="isAuthenticated()">
+          <a class="nav-link active" aria-current="page" href="/edit">회원정보 수정</a>
+        </li>
       </ul>
     </div>
   </div>

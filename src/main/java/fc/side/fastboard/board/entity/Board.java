@@ -31,6 +31,8 @@ public class Board {
     @Column(length = 50000)
     private String content;
 
+    private String storedFileName;
+
     @CreatedDate
     private LocalDateTime createdAt;
 

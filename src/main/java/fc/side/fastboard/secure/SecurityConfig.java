@@ -23,8 +23,11 @@ public class SecurityConfig {
 
     private static final String[] PERMIT_PATHS = {
             "/",
+            "/edit",
+            "/editSuccess",
             "/joinSuccess",
-            "/boards"
+            "/boards",
+            "/save/image"
     };
 
     @Bean
@@ -35,11 +38,13 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().
-                requestMatchers(new AntPathRequestMatcher( "/favicon.ico"))
-                .requestMatchers(new AntPathRequestMatcher( "/css/**"))
-                .requestMatchers(new AntPathRequestMatcher( "/js/**"))
-                .requestMatchers(new AntPathRequestMatcher( "/img/**"))
-                .requestMatchers(new AntPathRequestMatcher( "/lib/**"));
+                requestMatchers(new AntPathRequestMatcher("/favicon.ico"))
+                .requestMatchers(new AntPathRequestMatcher("/css/**"))
+                .requestMatchers(new AntPathRequestMatcher("/js/**"))
+                .requestMatchers(new AntPathRequestMatcher("/img/**"))
+                .requestMatchers(new AntPathRequestMatcher("/lib/**"))
+                .requestMatchers(new AntPathRequestMatcher("/images/**"))
+                .requestMatchers(new AntPathRequestMatcher("/error"));
     }
 
     @Bean

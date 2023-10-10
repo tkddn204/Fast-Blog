@@ -14,13 +14,13 @@ public class MemberDto {
 
     @Getter
     @Setter
-    @Builder
-    @Slf4j
     @NoArgsConstructor
     @AllArgsConstructor
     public static  class Request{
+        private Long id;
         private String userEmail;
         private String userPassword;
+        private String userCheckPassword;
         private String userName;
 
 
@@ -33,12 +33,14 @@ public class MemberDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static  class Response {
+        private Long id;
         private String userEmail;
         private String userPassword;
         private String userName;
 
         public static Response fromEntity(User user) {
             return Response.builder()
+                    .id(user.getId())
                     .userEmail(user.getEmail())
                     .userName(user.getUsername())
                     .userPassword(user.getPassword())

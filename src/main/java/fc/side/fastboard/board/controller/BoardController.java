@@ -60,7 +60,8 @@ public class BoardController {
 
   @PostMapping("/board/addForm")
   public String addBoard(
-      @Validated @ModelAttribute("board") CreateBoardDTO boardDto,
+      @Validated
+      @ModelAttribute("board") CreateBoardDTO boardDto,
       BindingResult bindingResult,  //ModelAttribute 뒤에 써야됩니다.
       RedirectAttributes redirectAttributes
   ) {
@@ -78,11 +79,11 @@ public class BoardController {
   @GetMapping("/board/editForm/{boardId}")
   public String editForm(
       @PathVariable Integer boardId,
-      @ModelAttribute("board") EditBoardDTO editBoardDTO,
+      @ModelAttribute("board") EditBoardDTO boardDto,
       Model model
   ) {
     Board findBoard = boardService.getBoardById(boardId);
-    model.addAttribute("board", findBoard);
+    model.addAttribute("originBoard", findBoard);
     return "board/editForm";
   }
 
