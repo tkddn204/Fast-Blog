@@ -16,8 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class BoardDetailDTO{
-  private Integer id;
-  private Integer writerId;
+  private Long id;
   private String title;
   private String content;
   private String fileId;
@@ -28,7 +27,6 @@ public class BoardDetailDTO{
   public static BoardDetailDTO fromEntity(Board board) {
     return BoardDetailDTO.builder()
             .id(board.getId())
-            .writerId(board.getWriterId())
             .title(board.getTitle())
             .content(board.getContent())
             .createdAt(board.getCreatedAt())
@@ -39,7 +37,6 @@ public class BoardDetailDTO{
   public static BoardDetailDTO fromEntity(Board board, String fileId) {
     return BoardDetailDTO.builder()
         .id(board.getId())
-        .writerId(board.getWriterId())
         .title(board.getTitle())
         .fileId(fileId)
         .content(board.getContent())

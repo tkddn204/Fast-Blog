@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -48,7 +50,7 @@ public class BoardController {
 
   @GetMapping("/board/{boardId}")
   public String getBoard(
-      @PathVariable Integer boardId,
+      @PathVariable Long boardId,
       Model model
   ) {
     BoardDetailDTO findBoard = boardService.findBoardById(boardId);
@@ -66,14 +68,15 @@ public class BoardController {
       @Validated
       @ModelAttribute("board") CreateBoardDTO boardDto,
       BindingResult bindingResult,  //ModelAttribute 뒤에 써야됩니다.
-      RedirectAttributes redirectAttributes
+      RedirectAttributes redirectAttributes,
+      Principal principal
   ) {
     if(bindingResult.hasErrors()) {
       log.info("validation-errors={}", bindingResult);
       return "board/postForm";
     }
 
-    BoardDetailDTO boardDetail = boardService.createBoard(boardDto);
+    BoardDetailDTO boardDetail = boardService.createBoard(principal.getName(), boardDto);
     redirectAttributes.addAttribute("id", boardDetail.getId());
     redirectAttributes.addAttribute("status", true);
     return "redirect:/board/" + boardDetail.getId();
@@ -81,7 +84,7 @@ public class BoardController {
 
   @GetMapping("/board/editForm/{boardId}")
   public String editForm(
-      @PathVariable Integer boardId,
+      @PathVariable Long boardId,
       Model model
   ) {
     Board findBoard = boardService.getBoardById(boardId);
@@ -96,7 +99,7 @@ public class BoardController {
 
   @PostMapping("/board/editForm/{boardId}")
   public String editBoard(
-      @PathVariable Integer boardId,
+      @PathVariable Long boardId,
       @Validated @ModelAttribute("board") EditBoardDTO boardDto,
       BindingResult bindingResult,
       RedirectAttributes redirectAttributes
@@ -114,7 +117,7 @@ public class BoardController {
 
   @GetMapping("/board/deleteForm/{boardId}")
   public String deleteForm(
-      @PathVariable Integer boardId
+      @PathVariable Long boardId
   ) {
     boardService.deleteBoard(boardId);
     return "redirect:/";

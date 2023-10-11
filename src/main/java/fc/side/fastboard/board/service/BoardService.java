@@ -10,6 +10,8 @@ import fc.side.fastboard.common.file.dto.GetFileDTO;
 import fc.side.fastboard.common.file.dto.SaveFileDTO;
 import fc.side.fastboard.common.file.dto.UpdateFileDTO;
 import fc.side.fastboard.common.file.service.FileService;
+import fc.side.fastboard.user.entity.User;
+import fc.side.fastboard.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +27,7 @@ import static fc.side.fastboard.common.exception.BoardErrorCode.*;
 public class BoardService {
 
   private final BoardRepository boardRepository;
+  private final UserRepository userRepository;
   private final FileService fileService;
 
   @Transactional
@@ -38,7 +41,7 @@ public class BoardService {
   }
 
   @Transactional
-  public BoardDetailDTO findBoardById(int id) {
+  public BoardDetailDTO findBoardById(long id) {
     Board board = getBoardById(id);
     if (board.getFileId() != null) {
       GetFileDTO.Response response = fileService.getFile(
@@ -51,14 +54,14 @@ public class BoardService {
   }
 
   @Transactional
-  public BoardDetailDTO createBoard(CreateBoardDTO boardDto) {
+  public BoardDetailDTO createBoard(String email, CreateBoardDTO boardDto) {
     if (boardDto.getFile() == null || boardDto.getFile().isEmpty()) {
       Board newBoard = Optional.of(boardDto)
-          .map(CreateBoardDTO::toEntity)
-          .map(boardRepository::save)
-          .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
-
+              .map(dto -> CreateBoardDTO.toEntity(dto, getUserByEmail(email)))
+              .map(boardRepository::save)
+              .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
       return BoardDetailDTO.fromEntity(newBoard);
+
     } else {
       SaveFileDTO.Response response = fileService.saveFile(SaveFileDTO.Request.builder()
           .originFileName(boardDto.getFile().getOriginalFilename())
@@ -66,7 +69,7 @@ public class BoardService {
           .build()
       );
       Board newBoard = Optional.of(boardDto)
-          .map(dto -> CreateBoardDTO.toEntity(dto, response.getFileId()))
+          .map(dto -> CreateBoardDTO.toEntity(dto, response.getFileId(), getUserByEmail(email)))
           .map(boardRepository::save)
           .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
       return BoardDetailDTO.fromEntity(newBoard, response.getOriginalFileName());
@@ -74,7 +77,7 @@ public class BoardService {
   }
 
   @Transactional
-  public void editBoard(int id, EditBoardDTO boardDto) {
+  public void editBoard(long id, EditBoardDTO boardDto) {
     Board foundBoard = getBoardById(id);
     foundBoard.setTitle(boardDto.getTitle());
     foundBoard.setContent(boardDto.getContent());
@@ -92,7 +95,7 @@ public class BoardService {
   }
 
   @Transactional
-  public void deleteBoard(int id) {
+  public void deleteBoard(long id) {
     boardRepository.findById(id)
         .ifPresentOrElse(foundBoard -> {
           boardRepository.deleteById(foundBoard.getId());
@@ -101,8 +104,13 @@ public class BoardService {
         });
   }
 
-  public Board getBoardById(int id) {
+  public Board getBoardById(long id) {
     return boardRepository.findById(id)
         .orElseThrow(()->new BoardException(BOARD_NO_EXIST));
+  }
+
+  public User getUserByEmail(String email) {
+    return userRepository.findByEmail(email)
+            .orElseThrow(RuntimeException::new);
   }
 }
