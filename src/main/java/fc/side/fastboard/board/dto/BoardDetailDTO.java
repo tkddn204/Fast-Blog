@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 public class BoardDetailDTO{
   private Long id;
   private String title;
+  private String writerName;
   private String content;
   private String fileId;
 
@@ -27,6 +28,7 @@ public class BoardDetailDTO{
   public static BoardDetailDTO fromEntity(Board board) {
     return BoardDetailDTO.builder()
             .id(board.getId())
+            .writerName(board.getUser().getUsername())
             .title(board.getTitle())
             .content(board.getContent())
             .createdAt(board.getCreatedAt())
