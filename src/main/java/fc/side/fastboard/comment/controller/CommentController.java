@@ -26,7 +26,6 @@ public class CommentController {
             RedirectAttributes redirectAttributes,
             Principal principal
     ) {
-        log.info("Comment-Content={}", commentDto.getContent());
         commentService.createComment(principal.getName(), commentDto, boardId);
 
         redirectAttributes.addAttribute("boardId", boardId);

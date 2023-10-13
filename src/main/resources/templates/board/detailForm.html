@@ -39,23 +39,25 @@
                         <div class="card bg-light">
                             <div class="card-body">
                                 <!-- Comment form-->
-                                <form class="mb-4" th:action="@{'/comment/' + ${board.id}}" method="post">
+                                <form class="mb-4" th:action="@{'/comment/' + ${board.id}}" method="post" th:if="${userEmail ne null}">
                                     <textarea class="form-control" name="content" id="content" type="text" rows="3" placeholder="댓글 작성..."></textarea>
                                     <button type="submit" class="btn btn-outline-dark btn-sm my-1">댓글 저장</button>
                                 </form>
-                                <!-- Comment with nested comments-->
-                                <!-- Comment with nested comments-->
-                                <!-- Single comment-->
+                                <!--comments-->
                                 <div th:each="comment : ${board.comments}">
                                     <div class="d-flex">
-                                        <div class="d-flex mb-4">
-                                            <!-- Parent comment-->
+                                        <div class="d-flex mb-4 flex-fill">
+                                            <!--comment-->
                                             <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                            <div class="ms-3">
+                                            <div class="ms-3 flex-fill">
                                                 <div class="fw-bold" th:text="${comment.writerName}">작성자</div>
                                                 <p class="card-text" th:text="${comment.content}">댓글 내용</p>
                                             </div>
                                         </div>
+                                        <section class="md-5 my-3" th:if="${comment.writerEmail eq userEmail}">
+                                            <button type="button" class="btn btn-primary btn-sm">수정</button>
+                                            <button type="button" class="btn btn-secondary btn-sm">삭제</button>
+                                        </section>
                                     </div>
                                 </div>
                             </div>

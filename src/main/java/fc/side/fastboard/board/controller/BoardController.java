@@ -52,11 +52,12 @@ public class BoardController {
   @GetMapping("/board/{boardId}")
   public String getBoard(
       @PathVariable Long boardId,
-      Model model
+      Model model,
+      Principal principal
   ) {
     BoardDetailDTO findBoard = boardService.findBoardById(boardId);
     model.addAttribute("board", findBoard);
-//    model.addAttribute("comments", findBoard.getComments());
+    model.addAttribute("userEmail", principal.getName());
     return "board/detailForm";
   }
 

@@ -14,12 +14,14 @@ import java.time.LocalDateTime;
 public class CommentDetailDTO {
 
     private String writerName;
+    private String writerEmail;
     private String content;
     private LocalDateTime createdAt;
 
     public static CommentDetailDTO fromEntity(Comment comment) {
         return CommentDetailDTO.builder()
                 .writerName(comment.getUser().getUsername())
+                .writerEmail(comment.getUser().getEmail())
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())
                 .build();
