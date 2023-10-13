@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -25,114 +26,115 @@ import static fc.side.fastboard.common.exception.BoardErrorCode.*;
 @RequiredArgsConstructor
 public class BoardService {
 
-  private final BoardRepository boardRepository;
-  private final FileService fileService;
+    private final BoardRepository boardRepository;
+    private final FileService fileService;
 
-  @Transactional
-  public Page<BoardDetailDTO> findAllBoards(Pageable pageable) {
-    return boardRepository.findAll(pageable).map(BoardDetailDTO::fromEntity);
-  }
-
-  @Transactional
-  public Page<BoardDetailDTO> findMyBoards(Pageable pageable) {
-    return boardRepository.findAll(pageable).map(BoardDetailDTO::fromEntity);
-  }
-
-  @Transactional
-  public BoardDetailDTO findBoardById(int id) {
-    Board board = getBoardById(id);
-    if (board.getStoredFileName() != null) {
-      GetFileDTO.Response response = fileService.getFile(
-          GetFileDTO.Request.builder().storedFileName(board.getStoredFileName()).build()
-      );
-      return BoardDetailDTO.fromEntity(board, response.getStoredFileName());
-    } else {
-      return BoardDetailDTO.fromEntity(board);
+    @Transactional
+    public Page<BoardDetailDTO> findAllBoards(Pageable pageable) {
+        return boardRepository.findAll(pageable).map(BoardDetailDTO::fromEntity);
     }
-  }
 
-  @Transactional
-  public BoardDetailDTO createBoard(CreateBoardDTO boardDto) {
-    if (boardDto.getFile() == null || boardDto.getFile().isEmpty()) {
-      Board newBoard = Optional.of(boardDto)
-          .map(CreateBoardDTO::toEntity)
-          .map(boardRepository::save)
-          .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
-
-      return BoardDetailDTO.fromEntity(newBoard);
-    } else {
-      SaveFileDTO.Response response = fileService.saveFile(SaveFileDTO.Request.builder()
-          .multipartFile(boardDto.getFile())
-          .build()
-      );
-      Board newBoard = Optional.of(boardDto)
-          .map(dto -> CreateBoardDTO.toEntity(dto, response.getStoredFileName()))
-          .map(boardRepository::save)
-          .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
-      return BoardDetailDTO.fromEntity(newBoard, response.getOriginalFileName());
+    @Transactional
+    public Page<BoardDetailDTO> findMyBoards(Pageable pageable) {
+        return boardRepository.findAll(pageable).map(BoardDetailDTO::fromEntity);
     }
-  }
 
-  @Transactional
-  public void editBoard(int id, EditBoardDTO boardDto) {
-    Board foundBoard = getBoardById(id);
-    foundBoard.setTitle(boardDto.getTitle());
-    foundBoard.setContent(boardDto.getContent());
+    @Transactional(readOnly = true)
+    public BoardDetailDTO findBoardById(int id) {
+        Board board = getBoardById(id);
+        if (board.getStoredFileName() != null) {
+            GetFileDTO.Response response = fileService.getFile(
+                    GetFileDTO.Request.builder().storedFileName(board.getStoredFileName()).build()
+            );
+            return BoardDetailDTO.fromEntity(board, response.getOriginFileName(), response.getStoredFileName());
+        } else {
+            return BoardDetailDTO.fromEntity(board);
+        }
+    }
 
-    boolean updateImage = false;
+    @Transactional
+    public BoardDetailDTO createBoard(CreateBoardDTO boardDto) {
+        if (boardDto.getFile() == null || boardDto.getFile().isEmpty()) {
+            Board newBoard = Optional.of(boardDto)
+                    .map(CreateBoardDTO::toEntity)
+                    .map(boardRepository::save)
+                    .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
 
-    // 이미 보드에 이미지가 있었을 때
-    if (foundBoard.getStoredFileName() != null) {
-      // 이미지를 수정하지 않았을 경우
-      if (foundBoard.getStoredFileName().equals(boardDto.getFileName())) return;
-      // 이미지를 삭제했을 경우
-      else if (boardDto.getFileName() == null || boardDto.getFileName().isBlank()) {
-        DeleteFileDTO.Request fileDeleteRequest = DeleteFileDTO.Request.builder()
-                    .storedFileName(foundBoard.getStoredFileName())
-                    .build();
-        fileService.deleteFile(fileDeleteRequest);
+            return BoardDetailDTO.fromEntity(newBoard);
+        } else {
+            SaveFileDTO.Response response = fileService.saveFile(SaveFileDTO.Request.builder()
+                    .multipartFile(boardDto.getFile())
+                    .build()
+            );
+            Board newBoard = Optional.of(boardDto)
+                    .map(dto -> CreateBoardDTO.toEntity(dto, response.getStoredFileName()))
+                    .map(boardRepository::save)
+                    .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
+            return BoardDetailDTO.fromEntity(newBoard, response.getOriginalFileName(), response.getStoredFileName());
+        }
+    }
+
+    @Transactional
+    public void editBoard(int id, EditBoardDTO boardDto) {
+        Board foundBoard = getBoardById(id);
+        foundBoard.setTitle(boardDto.getTitle());
+        foundBoard.setContent(boardDto.getContent());
+
+        // 이미 보드에 이미지가 있었을 때
+        if (foundBoard.getStoredFileName() != null) {
+            // 이미지를 수정하지 않았을 경우
+            if (foundBoard.getStoredFileName().equals(boardDto.getFileName())) return;
+                // 이미지를 삭제했을 경우
+            else if (boardDto.getFileName() == null || boardDto.getFileName().isBlank()) {
+                deleteImageFile(foundBoard);
+                return;
+            }
+        }
+
+        // 업로드된 이미지로 수정
+        if (boardDto.getFileName() != null) {
+            updateImageFile(boardDto.getFile(), foundBoard);
+        }
+    }
+
+    private void deleteImageFile(Board foundBoard) {
+        fileService.deleteFile(
+                DeleteFileDTO.Request.builder()
+                        .storedFileName(foundBoard.getStoredFileName())
+                        .build()
+        );
         foundBoard.setStoredFileName(null);
-      }
-      // 이미지를 수정했을 경우
-      else {
-        updateImage = true;
-      }
-    //보드에 이미지가 없었을 때
-    } else {
-      // 이미지를 새로 넣었을 경우
-      if (boardDto.getFileName() != null) {
-        updateImage = true;
-      }
     }
 
-    if (updateImage) {
-      UpdateFileDTO.Response updateFileResponse = fileService.updateFile(UpdateFileDTO.Request.builder()
-          .storedFileName(foundBoard.getStoredFileName())
-          .multipartFile(boardDto.getFile())
-          .build()
-      );
-      foundBoard.setStoredFileName(updateFileResponse.getStoredFileName());
+    private void updateImageFile(MultipartFile multipartFile, Board foundBoard) {
+        UpdateFileDTO.Response updateFileResponse = fileService.updateFile(
+                UpdateFileDTO.Request.builder()
+                        .storedFileName(foundBoard.getStoredFileName())
+                        .multipartFile(multipartFile)
+                        .build()
+        );
+        foundBoard.setStoredFileName(updateFileResponse.getStoredFileName());
     }
-  }
 
-  @Transactional
-  public void deleteBoard(int id) {
-    boardRepository.findById(id)
-        .ifPresentOrElse(foundBoard -> {
-          if (foundBoard.getStoredFileName() != null) {
-            DeleteFileDTO.Request fileDeleteRequest = DeleteFileDTO.Request.builder()
-                .storedFileName(foundBoard.getStoredFileName())
-                .build();
-            fileService.deleteFile(fileDeleteRequest);
-          }
-          boardRepository.deleteById(foundBoard.getId());
-        }, () -> {
-          throw new BoardException(CANNOT_DELETE_BOARD);
-        });
-  }
+    @Transactional
+    public void deleteBoard(int id) {
+        boardRepository.findById(id)
+                .ifPresentOrElse(foundBoard -> {
+                    if (foundBoard.getStoredFileName() != null) {
+                        DeleteFileDTO.Request fileDeleteRequest = DeleteFileDTO.Request.builder()
+                                .storedFileName(foundBoard.getStoredFileName())
+                                .build();
+                        fileService.deleteFile(fileDeleteRequest);
+                    }
+                    boardRepository.deleteById(foundBoard.getId());
+                }, () -> {
+                    throw new BoardException(CANNOT_DELETE_BOARD);
+                });
+    }
 
-  public Board getBoardById(int id) {
-    return boardRepository.findById(id)
-        .orElseThrow(()->new BoardException(BOARD_NO_EXIST));
-  }
+    @Transactional(readOnly = true)
+    public Board getBoardById(int id) {
+        return boardRepository.findById(id)
+                .orElseThrow(() -> new BoardException(BOARD_NO_EXIST));
+    }
 }

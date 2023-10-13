@@ -42,7 +42,7 @@
                             </div>
                             <label class="btn-file-select-text input-group-text"
                                    for="file"
-                                   th:text="${originBoard?.storedFileName}"></label>
+                                   th:text="${originBoard?.originFileName}"></label>
                             <input class="form-control custom-file-input" name="file"
                                    th:field="*{file}"
                                    th:errorclass="field-error"
@@ -72,7 +72,9 @@
         const fileSelectHiddenName = document.querySelector("#fileName");
 
         function init() {
+            const originFileName = fileSelectText.textContent;
             onChangeFileInput(fileSelectHiddenName);
+            fileSelectText.textContent = originFileName;
         }
 
         function onChangeFileInput(fileInputElement) {

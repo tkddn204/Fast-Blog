@@ -3,7 +3,6 @@ package fc.side.fastboard.board.controller;
 import fc.side.fastboard.board.dto.BoardDetailDTO;
 import fc.side.fastboard.board.dto.CreateBoardDTO;
 import fc.side.fastboard.board.dto.EditBoardDTO;
-import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.service.BoardService;
 import fc.side.fastboard.board.util.PageNumber;
 import lombok.RequiredArgsConstructor;
@@ -27,105 +26,105 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 public class BoardController {
 
-  private final BoardService boardService;
+    private final BoardService boardService;
 
-  @GetMapping("/")
-  public String index(
-          Model model,
-          @PageableDefault(size=6, sort="id", direction = Sort.Direction.DESC)
-          Pageable pageable
-  ) {
-    Page<BoardDetailDTO> boards = boardService.findAllBoards(pageable);
-    PageNumber<BoardDetailDTO> pageNumber = new PageNumber<>(boards);
+    @GetMapping("/")
+    public String index(
+            Model model,
+            @PageableDefault(size = 6, sort = "id", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        Page<BoardDetailDTO> boards = boardService.findAllBoards(pageable);
+        PageNumber<BoardDetailDTO> pageNumber = new PageNumber<>(boards);
 
-    model.addAttribute("boards", boards);
-    model.addAttribute("pageNumber", pageNumber);
-    return "index-temp";
-  }
-
-  @GetMapping("/board/{boardId}")
-  public String getBoard(
-      @PathVariable Integer boardId,
-      Model model
-  ) {
-    BoardDetailDTO findBoard = boardService.findBoardById(boardId);
-    model.addAttribute("board", findBoard);
-    return "board/detailForm";
-  }
-
-  @GetMapping("/board/addForm")
-  public String addForm(@ModelAttribute("board") CreateBoardDTO createBoardDTO) {
-    return "board/postForm";
-  }
-
-  @PostMapping("/board/addForm")
-  public String addBoard(
-      @Validated
-      @ModelAttribute("board") CreateBoardDTO boardDto,
-      BindingResult bindingResult,  //ModelAttribute 뒤에 써야됩니다.
-      RedirectAttributes redirectAttributes
-  ) {
-    if(bindingResult.hasErrors()) {
-      log.info("validation-errors={}", bindingResult);
-      return "board/postForm";
+        model.addAttribute("boards", boards);
+        model.addAttribute("pageNumber", pageNumber);
+        return "index-temp";
     }
 
-    BoardDetailDTO boardDetail = boardService.createBoard(boardDto);
-    redirectAttributes.addAttribute("id", boardDetail.getId());
-    redirectAttributes.addAttribute("status", true);
-    return "redirect:/board/" + boardDetail.getId();
-  }
-
-  @GetMapping("/board/editForm/{boardId}")
-  public String editForm(
-      @PathVariable Integer boardId,
-      @ModelAttribute("board") EditBoardDTO boardDto,
-      Model model
-  ) {
-    Board findBoard = boardService.getBoardById(boardId);
-    model.addAttribute("originBoard", findBoard);
-    return "board/editForm";
-  }
-
-  @PostMapping("/board/editForm/{boardId}")
-  public String editBoard(
-      @PathVariable Integer boardId,
-      @Validated @ModelAttribute("board") EditBoardDTO boardDto,
-      BindingResult bindingResult,
-      RedirectAttributes redirectAttributes
-  ) {
-    if(bindingResult.hasErrors()) {
-      log.info("validation-errors={}", bindingResult);
-      return "board/editForm";
+    @GetMapping("/board/{boardId}")
+    public String getBoard(
+            @PathVariable Integer boardId,
+            Model model
+    ) {
+        BoardDetailDTO findBoard = boardService.findBoardById(boardId);
+        model.addAttribute("board", findBoard);
+        return "board/detailForm";
     }
 
-    boardService.editBoard(boardId, boardDto);
-    redirectAttributes.addAttribute("status", true);
+    @GetMapping("/board/addForm")
+    public String addForm(@ModelAttribute("board") CreateBoardDTO createBoardDTO) {
+        return "board/postForm";
+    }
 
-    return "redirect:/board/" + boardId;
-  }
+    @PostMapping("/board/addForm")
+    public String addBoard(
+            @Validated
+            @ModelAttribute("board") CreateBoardDTO boardDto,
+            BindingResult bindingResult,  //ModelAttribute 뒤에 써야됩니다.
+            RedirectAttributes redirectAttributes
+    ) {
+        if (bindingResult.hasErrors()) {
+            log.info("validation-errors={}", bindingResult);
+            return "board/postForm";
+        }
 
-  @GetMapping("/board/deleteForm/{boardId}")
-  public String deleteForm(
-      @PathVariable Integer boardId
-  ) {
-    boardService.deleteBoard(boardId);
-    return "redirect:/";
-  }
+        BoardDetailDTO boardDetail = boardService.createBoard(boardDto);
+        redirectAttributes.addAttribute("id", boardDetail.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/board/" + boardDetail.getId();
+    }
+
+    @GetMapping("/board/editForm/{boardId}")
+    public String editForm(
+            @PathVariable Integer boardId,
+            @ModelAttribute("board") EditBoardDTO boardDto,
+            Model model
+    ) {
+        BoardDetailDTO originBoard = boardService.findBoardById(boardId);
+        model.addAttribute("originBoard", originBoard);
+        return "board/editForm";
+    }
+
+    @PostMapping("/board/editForm/{boardId}")
+    public String editBoard(
+            @PathVariable Integer boardId,
+            @Validated @ModelAttribute("board") EditBoardDTO boardDto,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (bindingResult.hasErrors()) {
+            log.info("validation-errors={}", bindingResult);
+            return "board/editForm";
+        }
+
+        boardService.editBoard(boardId, boardDto);
+        redirectAttributes.addAttribute("status", true);
+
+        return "redirect:/board/" + boardId;
+    }
+
+    @GetMapping("/board/deleteForm/{boardId}")
+    public String deleteForm(
+            @PathVariable Integer boardId
+    ) {
+        boardService.deleteBoard(boardId);
+        return "redirect:/";
+    }
 
 
-  @GetMapping("/boards")
-  public String getMyBoards(
-      Model model,
-      @PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC)
-      Pageable pageable
-  ) {
-    Page<BoardDetailDTO> boards = boardService.findMyBoards(pageable);
-    PageNumber<BoardDetailDTO> pageNumber = new PageNumber<>(boards);
+    @GetMapping("/boards")
+    public String getMyBoards(
+            Model model,
+            @PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        Page<BoardDetailDTO> boards = boardService.findMyBoards(pageable);
+        PageNumber<BoardDetailDTO> pageNumber = new PageNumber<>(boards);
 
-    model.addAttribute("boards", boards);
-    model.addAttribute("pageNumber", pageNumber);
-    return "board/listForm";
-  }
+        model.addAttribute("boards", boards);
+        model.addAttribute("pageNumber", pageNumber);
+        return "board/listForm";
+    }
 
 }
