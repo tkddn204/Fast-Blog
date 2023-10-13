@@ -6,6 +6,7 @@ import fc.side.fastboard.board.dto.EditBoardDTO;
 import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.service.BoardService;
 import fc.side.fastboard.board.util.PageNumber;
+import fc.side.fastboard.comment.dto.CommentDetailDTO;
 import fc.side.fastboard.common.file.dto.GetFileDTO;
 import fc.side.fastboard.common.file.service.FileService;
 import lombok.RequiredArgsConstructor;
@@ -55,11 +56,13 @@ public class BoardController {
   ) {
     BoardDetailDTO findBoard = boardService.findBoardById(boardId);
     model.addAttribute("board", findBoard);
+//    model.addAttribute("comments", findBoard.getComments());
     return "board/detailForm";
   }
 
   @GetMapping("/board/addForm")
   public String addForm(@ModelAttribute("board") CreateBoardDTO createBoardDTO) {
+
     return "board/postForm";
   }
 
