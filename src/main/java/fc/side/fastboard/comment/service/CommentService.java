@@ -34,13 +34,24 @@ public class CommentService {
         );
     }
 
-    public User getUserByEmail(String email) {
+    @Transactional
+    public void deleteComment(long id) {
+        Comment comment = getCommentById(id);
+        commentRepository.deleteById(comment.getId());
+    }
+
+    private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(RuntimeException::new);
     }
 
-    public Board getBoardById(Long boardId) {
+    private Board getBoardById(Long boardId) {
         return boardRepository.findById(boardId)
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private Comment getCommentById(Long commentId) {
+        return commentRepository.findById(commentId)
                 .orElseThrow(RuntimeException::new);
     }
 }

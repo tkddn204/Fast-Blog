@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CommentDetailDTO {
 
+    private Long id;
     private String writerName;
     private String writerEmail;
     private String content;
@@ -20,6 +21,7 @@ public class CommentDetailDTO {
 
     public static CommentDetailDTO fromEntity(Comment comment) {
         return CommentDetailDTO.builder()
+                .id(comment.getId())
                 .writerName(comment.getUser().getUsername())
                 .writerEmail(comment.getUser().getEmail())
                 .content(comment.getContent())

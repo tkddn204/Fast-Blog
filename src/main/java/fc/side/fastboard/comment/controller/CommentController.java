@@ -5,9 +5,7 @@ import fc.side.fastboard.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
@@ -19,7 +17,7 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping("/comment/{boardId}")
+    @PostMapping("/board/{boardId}/comment")
     public String addComment(
             @ModelAttribute("comment") CreateCommentDTO commentDto,
             @PathVariable Long boardId,
@@ -31,5 +29,14 @@ public class CommentController {
         redirectAttributes.addAttribute("boardId", boardId);
         return "redirect:/board/{boardId}";
 
+    }
+
+    @GetMapping("/board/{boardId}/comment/{commentId}")
+    public String deleteComment(
+            @PathVariable Long boardId,
+            @PathVariable Long commentId
+    ) {
+        commentService.deleteComment(commentId);
+        return "redirect:/board/" + boardId;
     }
 }
