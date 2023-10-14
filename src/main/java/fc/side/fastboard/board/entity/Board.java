@@ -37,7 +37,7 @@ public class Board {
     @Column(length = 50000)
     private String content;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board", cascade = CascadeType.PERSIST)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
     private UUID fileId;
