@@ -48,9 +48,12 @@
                                     <div class="d-flex">
                                         <div class="d-flex mb-4 flex-fill">
                                             <!--comment-->
-                                            <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                            <div class="ms-3 flex-fill">
-                                                <div class="fw-bold" th:text="${comment.writerName}">작성자</div>
+                                            <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50m/ced4da/6c757d.jpg" alt="..." /></div>
+                                            <div class="ms-3">
+                                                <div class="d-flex">
+                                                    <div class="me-3 fw-bold" th:text="${comment.writerName}">작성자</div>
+                                                    <div class="fw-lighter" th:text="${#temporals.format(comment.getCreatedAt(),'yyyy-MM-dd HH:mm')}">작성 일자</div>
+                                                </div>
                                                 <p class="card-text" th:text="${comment.content}">댓글 내용</p>
                                             </div>
                                         </div>
