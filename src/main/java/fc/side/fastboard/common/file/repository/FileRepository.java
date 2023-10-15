@@ -7,5 +7,4 @@ import java.util.Optional;
 
 public interface FileRepository extends CrudRepository<FileEntity, Integer> {
   Optional<FileEntity> findByStoredFileName(String storedFileName);
-  Optional<FileEntity> findByOriginFileName(String originFileName);
 }

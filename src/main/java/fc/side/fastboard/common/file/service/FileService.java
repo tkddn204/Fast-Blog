@@ -90,7 +90,7 @@ public class FileService {
     String fileFullPath = entity.get().getFilePath();
     deleteToFileSystem(fileFullPath);
     saveToFileSystem(request.getMultipartFile(), fileFullPath);
-    entity.get().setOriginFileName(request.getMultipartFile().getName());
+    entity.get().setOriginFileName(request.getMultipartFile().getOriginalFilename());
 
     return UpdateFileDTO.Response.from(entity.get());
   }
