@@ -11,3 +11,7 @@ spring:
         format_sql: true
         hbm2ddl:
           auto: update
+
+file:
+  dir: C:\Users\s_sja\IdeaProjects\fastboard_Files
+  test-dir: C:\Users\s_sja\IdeaProjects\fastboard_Files
