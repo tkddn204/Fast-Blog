@@ -47,12 +47,9 @@ class FileServiceTest {
         TEST_FILE_CONTENT_TYPE,
         new FileInputStream(testImageFile)
     );
-    SaveFileDTO.Request request = SaveFileDTO.Request.builder()
-        .multipartFile(mockMultipartFile)
-        .build();
 
     // when
-    SaveFileDTO.Response response = fileService.saveFile(request);
+    SaveFileDTO.Response response = fileService.saveFile(mockMultipartFile);
 
     // then
     File actualFile = new File(response.getFilePath());
@@ -74,10 +71,7 @@ class FileServiceTest {
         TEST_FILE_CONTENT_TYPE,
         new FileInputStream(testImageFile)
     );
-    SaveFileDTO.Request saveRequest = SaveFileDTO.Request.builder()
-        .multipartFile(mockMultipartFile)
-        .build();
-    SaveFileDTO.Response saveResponse = fileService.saveFile(saveRequest);
+    SaveFileDTO.Response saveResponse = fileService.saveFile(mockMultipartFile);
 
     // when
     GetFileResponse response = fileService.getFile(saveResponse.getStoredFileName());
@@ -107,10 +101,7 @@ class FileServiceTest {
         TEST_FILE_CONTENT_TYPE,
         new FileInputStream(testImageFile)
     );
-    SaveFileDTO.Request saveRequest = SaveFileDTO.Request.builder()
-        .multipartFile(mockMultipartFile)
-        .build();
-    fileService.saveFile(saveRequest);
+    fileService.saveFile(mockMultipartFile);
 
     // 3번 파일을 수정하는 요청을 만든다
     File testUpdateImageFile = Path.of(TEST_FILE_DIR, testUpdateFileName).toFile();
@@ -152,10 +143,7 @@ class FileServiceTest {
         TEST_FILE_CONTENT_TYPE,
         new FileInputStream(testImageFile)
     );
-    SaveFileDTO.Request saveRequest = SaveFileDTO.Request.builder()
-        .multipartFile(mockMultipartFile)
-        .build();
-    SaveFileDTO.Response saveResponse = fileService.saveFile(saveRequest);
+    SaveFileDTO.Response saveResponse = fileService.saveFile(mockMultipartFile);
 
     // 5번 파일의 storedFileName을 받아온다
     String fileName = saveResponse.getStoredFileName();

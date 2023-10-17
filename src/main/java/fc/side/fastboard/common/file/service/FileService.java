@@ -35,9 +35,9 @@ public class FileService {
   }
 
   @Transactional
-  public SaveFileDTO.Response saveFile(SaveFileDTO.Request request) {
+  public SaveFileDTO.Response saveFile(MultipartFile multipartFile) {
     String originalFileName = Objects.requireNonNull(
-        request.getMultipartFile().getOriginalFilename()
+        multipartFile.getOriginalFilename()
     );
 
     // 서버에 저장될 파일명 생성 및 체크
@@ -46,7 +46,7 @@ public class FileService {
     String storedFileName = fileUUID + "." + extension;
     String fileFullPath = getFullFilePath(storedFileName);
 
-    saveToFileSystem(request.getMultipartFile(), fileFullPath);
+    saveToFileSystem(multipartFile, fileFullPath);
 
     FileEntity fileEntity = FileEntity.builder()
         .storedFileName(storedFileName)
@@ -70,10 +70,7 @@ public class FileService {
     // 없는 파일을 수정할 경우
     if (entity.isEmpty()) {
       // 파일 저장 후 결과 반환
-      SaveFileDTO.Response response = saveFile(SaveFileDTO.Request.builder()
-          .multipartFile(request.getMultipartFile())
-          .build()
-      );
+      SaveFileDTO.Response response = saveFile(request.getMultipartFile());
       FileEntity newFileEntity = FileEntity.builder()
           .storedFileName(response.getStoredFileName())
           .originFileName(originalFileName)

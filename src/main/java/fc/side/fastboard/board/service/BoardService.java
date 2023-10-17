@@ -57,10 +57,7 @@ public class BoardService {
 
             return BoardDetailDTO.fromEntity(newBoard);
         } else {
-            SaveFileDTO.Response response = fileService.saveFile(SaveFileDTO.Request.builder()
-                    .multipartFile(boardDto.getFile())
-                    .build()
-            );
+            SaveFileDTO.Response response = fileService.saveFile(boardDto.getFile());
             Board newBoard = Optional.of(boardDto)
                     .map(dto -> CreateBoardDTO.toEntity(dto, response.getStoredFileName()))
                     .map(boardRepository::save)
