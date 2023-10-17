@@ -1,6 +1,6 @@
 package fc.side.fastboard.common.file.service;
 
-import fc.side.fastboard.common.file.dto.*;
+import fc.side.fastboard.common.file.dto.FileResponseDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,139 +17,128 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ActiveProfiles("dev")
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class FileServiceTest {
 
-  private static final String TEST_FILE_NAME = "test_image_";
-  private static final String TEST_FILE_EXT = ".png";
-  private static final String TEST_FILE_CONTENT_TYPE = "image/png";
+    private static final String TEST_FILE_NAME = "test_image_";
+    private static final String TEST_FILE_EXT = ".png";
+    private static final String TEST_FILE_CONTENT_TYPE = "image/png";
 
-  private static String TEST_FILE_DIR;
+    private static String TEST_FILE_DIR;
 
-  @Value("${file.test-dir}")
-  public void setNameStatic(String testDir) {
-    FileServiceTest.TEST_FILE_DIR = testDir;
-  }
+    @Value("${file.test-dir}")
+    public void setNameStatic(String testDir) {
+        FileServiceTest.TEST_FILE_DIR = testDir;
+    }
 
-  @Autowired
-  private FileService fileService;
+    @Autowired
+    private FileService fileService;
 
-  @DisplayName("saveFile()을 호출해서 파일을 저장할 수 있다.")
-  @Test
-  public void shouldSuccessSaveFile() throws IOException {
-    // given
-    String testFileName = TEST_FILE_NAME + 1 + TEST_FILE_EXT;
-    File testImageFile = Path.of(TEST_FILE_DIR, testFileName).toFile();
-    MockMultipartFile mockMultipartFile = new MockMultipartFile(
-        TEST_FILE_NAME,
-        testFileName,
-        TEST_FILE_CONTENT_TYPE,
-        new FileInputStream(testImageFile)
-    );
+    @DisplayName("saveFile()을 호출해서 파일을 저장할 수 있다.")
+    @Test
+    public void shouldSuccessSaveFile() throws IOException {
+        // given
+        int fileNumber = 1;
+        MockMultipartFile mockMultipartFile = createMockMultipartFile(
+                TEST_FILE_NAME + fileNumber + TEST_FILE_EXT
+        );
 
-    // when
-    FileResponseDTO fileResponse = fileService.saveFile(mockMultipartFile);
+        // when
+        FileResponseDTO saveResponse = fileService.saveFile(mockMultipartFile);
 
-    // then
-    File actualFile = new File(fileResponse.filePath());
-    actualFile.deleteOnExit();
-    assertTrue(Files.isSameFile(
-        Path.of(fileResponse.filePath()), Path.of(actualFile.getPath())
-    ));
-  }
+        // then
+        File actualFile = new File(saveResponse.filePath());
+        actualFile.deleteOnExit();
+        assertTrue(Files.isSameFile(
+                Path.of(saveResponse.filePath()), actualFile.toPath()
+        ));
+    }
 
-  @DisplayName("getFile()을 호출해서 저장된 파일을 가져올 수 있다.")
-  @Test
-  public void shouldSuccessGetFile() throws IOException {
-    // given
-    String testFileName = TEST_FILE_NAME + 2 + TEST_FILE_EXT;
-    File testImageFile = Path.of(TEST_FILE_DIR, testFileName).toFile();
-    MockMultipartFile mockMultipartFile = new MockMultipartFile(
-        TEST_FILE_NAME,
-        testFileName,
-        TEST_FILE_CONTENT_TYPE,
-        new FileInputStream(testImageFile)
-    );
-    FileResponseDTO saveResponse = fileService.saveFile(mockMultipartFile);
+    @DisplayName("getFile()을 호출해서 저장된 파일을 가져올 수 있다.")
+    @Test
+    public void shouldSuccessGetFile() throws IOException {
+        // given
+        int fileNumber = 2;
+        MockMultipartFile mockMultipartFile = createMockMultipartFile(
+                TEST_FILE_NAME + fileNumber + TEST_FILE_EXT
+        );
+        FileResponseDTO saveResponse = fileService.saveFile(mockMultipartFile);
 
-    // when
-    FileResponseDTO response = fileService.getFile(saveResponse.storedFileName());
+        // when
+        FileResponseDTO response = fileService.getFile(saveResponse.storedFileName());
 
-    // then
-    File actualFile = new File(response.filePath());
-    actualFile.deleteOnExit();
-    assertEquals(saveResponse.storedFileName(), response.storedFileName());
-    assertEquals(testFileName, response.originFileName());
-    assertTrue(Files.isSameFile(
-        Path.of(response.filePath()), Path.of(actualFile.getPath())
-    ));
-  }
+        // then
+        File actualFile = new File(response.filePath());
+        actualFile.deleteOnExit();
+        assertEquals(saveResponse.storedFileName(), response.storedFileName());
+        assertEquals(saveResponse.originFileName(), response.originFileName());
+        assertTrue(Files.isSameFile(
+                Path.of(response.filePath()), actualFile.toPath()
+        ));
+    }
 
-  @DisplayName("updateFile()을 호출해서 저장된 파일을 수정(변경)할 수 있다.")
-  @Test
-  public void shouldSuccessUpdateFile() throws IOException {
-    // given
-    String testFileName = TEST_FILE_NAME + 3 + TEST_FILE_EXT;
-    String testUpdateFileName = TEST_FILE_NAME + 4 + TEST_FILE_EXT;
-    
-    // 3번 파일을 저장한다
-    File testImageFile = Path.of(TEST_FILE_DIR, testFileName).toFile();
-    MockMultipartFile mockMultipartFile = new MockMultipartFile(
-        TEST_FILE_NAME,
-        testFileName,
-        TEST_FILE_CONTENT_TYPE,
-        new FileInputStream(testImageFile)
-    );
-    fileService.saveFile(mockMultipartFile);
+    @DisplayName("updateFile()을 호출해서 저장된 파일을 수정(변경)할 수 있다.")
+    @Test
+    public void shouldSuccessUpdateFile() throws IOException {
+        // given
 
-    // 3번 파일을 수정하는 요청을 만든다
-    File testUpdateImageFile = Path.of(TEST_FILE_DIR, testUpdateFileName).toFile();
-    MockMultipartFile mockUpdateMultipartFile = new MockMultipartFile(
-        TEST_FILE_NAME,
-        testUpdateFileName,
-        TEST_FILE_CONTENT_TYPE,
-        new FileInputStream(testUpdateImageFile)
-    );
+        // 3번 파일을 저장한다
+        int fileNumber = 3;
+        MockMultipartFile mockMultipartFile = createMockMultipartFile(
+                TEST_FILE_NAME + fileNumber + TEST_FILE_EXT
+        );
+        FileResponseDTO savedFileResponse = fileService.saveFile(mockMultipartFile);
+        File savedFile = new File(savedFileResponse.filePath());
+        savedFile.deleteOnExit();
 
-    // when
-    FileResponseDTO fileResponse = fileService.updateFile(
-            testUpdateFileName,
-            mockUpdateMultipartFile
-    );
-    FileResponseDTO getUpdatedFileResponse = fileService.getFile(fileResponse.storedFileName());
+        // 3번 파일을 4번 파일로 수정하는 요청을 만든다
+        String testUpdateFileName = TEST_FILE_NAME + 4 + TEST_FILE_EXT;
+        MockMultipartFile mockUpdateMultipartFile = createMockMultipartFile(
+                testUpdateFileName
+        );
 
-    // then
-    File actualFile = new File(getUpdatedFileResponse.filePath());
-    actualFile.deleteOnExit();
-    assertEquals(fileResponse.storedFileName(), getUpdatedFileResponse.storedFileName());
-    assertEquals(testUpdateFileName, getUpdatedFileResponse.originFileName());
-    assertTrue(Files.isSameFile(
-        Path.of(fileResponse.filePath()), Path.of(actualFile.getPath())
-    ));
-  }
+        // when
+        FileResponseDTO fileResponse = fileService.updateFile(
+                testUpdateFileName,
+                mockUpdateMultipartFile
+        );
 
-  @DisplayName("deleteFile()을 호출해서 저장된 파일을 삭제할 수 있다.")
-  @Test
-  public void shouldSuccessDeleteFile() throws IOException {
-    // given
-    String testFileName = TEST_FILE_NAME + 5 + TEST_FILE_EXT;
-    File testImageFile = Path.of(TEST_FILE_DIR, testFileName).toFile();
+        // then
+        File actualFile = new File(fileResponse.filePath());
+        actualFile.deleteOnExit();
+        assertEquals(testUpdateFileName, fileResponse.originFileName());
+        assertTrue(Files.isSameFile(
+                Path.of(fileResponse.filePath()), actualFile.toPath()
+        ));
+    }
 
-    // 5번 파일을 만든다
-    MockMultipartFile mockMultipartFile = new MockMultipartFile(
-        TEST_FILE_NAME,
-        testFileName,
-        TEST_FILE_CONTENT_TYPE,
-        new FileInputStream(testImageFile)
-    );
-    FileResponseDTO saveResponse = fileService.saveFile(mockMultipartFile);
+    @DisplayName("deleteFile()을 호출해서 저장된 파일을 삭제할 수 있다.")
+    @Test
+    public void shouldSuccessDeleteFile() throws IOException {
+        // given
 
-    // when
-    fileService.deleteFile(saveResponse.storedFileName());
+        // 5번 파일을 만든다
+        int fileNumber = 5;
+        MockMultipartFile mockMultipartFile = createMockMultipartFile(
+                TEST_FILE_NAME + fileNumber + TEST_FILE_EXT
+        );
+        FileResponseDTO saveResponse = fileService.saveFile(mockMultipartFile);
 
-    // then
-    File actualFile = new File(saveResponse.filePath());
-    assertFalse(actualFile.exists());
-  }
+        // when
+        fileService.deleteFile(saveResponse.storedFileName());
+
+        // then
+        File actualFile = new File(saveResponse.filePath());
+        assertFalse(actualFile.exists());
+    }
+
+    private MockMultipartFile createMockMultipartFile(String testFileName) throws IOException {
+        return new MockMultipartFile(
+                TEST_FILE_NAME,
+                testFileName,
+                TEST_FILE_CONTENT_TYPE,
+                new FileInputStream(Path.of(TEST_FILE_DIR, testFileName).toFile())
+        );
+    }
 }
