@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.nio.file.Path;
+import java.util.UUID;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -26,4 +29,15 @@ public class FileEntity extends BaseTimeEntity {
 
   @NotNull
   private String filePath;
+
+  public static FileEntity from(String fileDirectory, String originFileName) {
+    UUID fileUUID = UUID.randomUUID();
+    String extension = originFileName.substring(originFileName.lastIndexOf('.') + 1);
+    String storedFileName = fileUUID + "." + extension;
+    return FileEntity.builder()
+            .storedFileName(storedFileName)
+            .originFileName(originFileName)
+            .filePath(Path.of(fileDirectory, storedFileName).toString())
+            .build();
+  }
 }

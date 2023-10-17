@@ -6,6 +6,7 @@ import fc.side.fastboard.common.file.exception.FileNotFoundException;
 import fc.side.fastboard.common.file.repository.FileDataBaseRepository;
 import fc.side.fastboard.common.file.repository.FileSystemRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +17,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class FileService {
+    @Value("${file.dir}")
+    private String FILE_DIR;
 
     private final FileDataBaseRepository fileDataBaseRepository;
     private final FileSystemRepository fileSystemRepository;
@@ -33,7 +36,7 @@ public class FileService {
                 multipartFile.getOriginalFilename()
         );
 
-        FileEntity newFileEntity = fileSystemRepository.createStoredFile(originalFileName);
+        FileEntity newFileEntity = FileEntity.from(FILE_DIR, originalFileName);
         fileSystemRepository.saveFile(multipartFile, newFileEntity.getFilePath());
         FileEntity savedFileEntity = fileDataBaseRepository.save(newFileEntity);
 
