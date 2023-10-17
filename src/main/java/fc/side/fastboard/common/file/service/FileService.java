@@ -86,8 +86,8 @@ public class FileService {
   }
 
   @Transactional
-  public void deleteFile(DeleteFileDTO.Request request) {
-    FileEntity fileEntity = fileRepository.findByStoredFileName(request.getStoredFileName())
+  public void deleteFile(String storedFileName) {
+    FileEntity fileEntity = fileRepository.findByStoredFileName(storedFileName)
         .orElseThrow(FileNotFoundException::new);
 
     String fileFullPath = fileEntity.getFilePath();

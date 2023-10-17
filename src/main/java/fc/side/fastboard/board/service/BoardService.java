@@ -90,11 +90,7 @@ public class BoardService {
     }
 
     private void deleteImageFile(Board foundBoard) {
-        fileService.deleteFile(
-                DeleteFileDTO.Request.builder()
-                        .storedFileName(foundBoard.getStoredFileName())
-                        .build()
-        );
+        fileService.deleteFile(foundBoard.getStoredFileName());
         foundBoard.setStoredFileName(null);
     }
 
@@ -111,10 +107,7 @@ public class BoardService {
         boardRepository.findById(id)
                 .ifPresentOrElse(foundBoard -> {
                     if (foundBoard.getStoredFileName() != null) {
-                        DeleteFileDTO.Request fileDeleteRequest = DeleteFileDTO.Request.builder()
-                                .storedFileName(foundBoard.getStoredFileName())
-                                .build();
-                        fileService.deleteFile(fileDeleteRequest);
+                        fileService.deleteFile(foundBoard.getStoredFileName());
                     }
                     boardRepository.deleteById(foundBoard.getId());
                 }, () -> {

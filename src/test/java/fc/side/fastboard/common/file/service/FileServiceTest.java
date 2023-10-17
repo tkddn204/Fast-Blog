@@ -145,17 +145,11 @@ class FileServiceTest {
     );
     FileResponseDTO saveResponse = fileService.saveFile(mockMultipartFile);
 
-    // 5번 파일의 storedFileName을 받아온다
-    String fileName = saveResponse.storedFileName();
-    DeleteFileDTO.Request request = DeleteFileDTO.Request.builder()
-        .storedFileName(fileName)
-        .build();
-
     // when
-    fileService.deleteFile(request);
+    fileService.deleteFile(saveResponse.storedFileName());
 
     // then
-    File actualFile = new File(fileName);
+    File actualFile = new File(saveResponse.filePath());
     assertFalse(actualFile.exists());
   }
 }
