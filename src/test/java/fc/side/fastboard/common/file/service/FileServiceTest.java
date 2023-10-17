@@ -81,13 +81,9 @@ class FileServiceTest {
         .multipartFile(mockMultipartFile)
         .build();
     SaveFileDTO.Response saveResponse = fileService.saveFile(saveRequest);
-    String storedFileName = saveResponse.getStoredFileName();
-    GetFileDTO.Request request = GetFileDTO.Request.builder()
-        .storedFileName(storedFileName)
-        .build();
 
     // when
-    GetFileDTO.Response response = fileService.getFile(request);
+    GetFileDTO.Response response = fileService.getFile(saveResponse.getStoredFileName());
 
     // then
     File actualFile = new File(response.getFilePath());
@@ -133,11 +129,7 @@ class FileServiceTest {
 
     // when
     UpdateFileDTO.Response response = fileService.updateFile(updateRequest);
-
-    GetFileDTO.Request request = GetFileDTO.Request.builder()
-        .storedFileName(response.getStoredFileName())
-        .build();
-    GetFileDTO.Response getUpdatedFileResponse = fileService.getFile(request);
+    GetFileDTO.Response getUpdatedFileResponse = fileService.getFile(response.getStoredFileName());
 
     // then
     File actualFile = new File(getUpdatedFileResponse.getFilePath());

@@ -15,15 +15,6 @@ public class GetFileDTO {
   @NoArgsConstructor
   @Builder
   @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-  public static class Request {
-    private String storedFileName;
-  }
-
-  @Data
-  @AllArgsConstructor
-  @NoArgsConstructor
-  @Builder
-  @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
   public static class Response {
 
     private String storedFileName;

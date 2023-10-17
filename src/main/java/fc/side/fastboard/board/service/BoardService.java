@@ -43,9 +43,7 @@ public class BoardService {
     public BoardDetailDTO findBoardById(int id) {
         Board board = getBoardById(id);
         if (board.getStoredFileName() != null) {
-            GetFileDTO.Response response = fileService.getFile(
-                    GetFileDTO.Request.builder().storedFileName(board.getStoredFileName()).build()
-            );
+            GetFileDTO.Response response = fileService.getFile(board.getStoredFileName());
             return BoardDetailDTO.fromEntity(board, response.getOriginFileName(), response.getStoredFileName());
         } else {
             return BoardDetailDTO.fromEntity(board);

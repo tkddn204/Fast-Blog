@@ -31,8 +31,8 @@ public class FileService {
 
   private final FileRepository fileRepository;
 
-  public GetFileDTO.Response getFile(GetFileDTO.Request request) {
-    return fileRepository.findByStoredFileName(request.getStoredFileName())
+  public GetFileDTO.Response getFile(String storedFileName) {
+    return fileRepository.findByStoredFileName(storedFileName)
         .map(GetFileDTO.Response::fromEntity)
         .orElseThrow(FileNotFoundException::new);
   }
