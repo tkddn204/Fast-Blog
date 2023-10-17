@@ -100,10 +100,8 @@ public class BoardService {
 
     private void updateImageFile(MultipartFile multipartFile, Board foundBoard) {
         UpdateFileDTO.Response updateFileResponse = fileService.updateFile(
-                UpdateFileDTO.Request.builder()
-                        .storedFileName(foundBoard.getStoredFileName())
-                        .multipartFile(multipartFile)
-                        .build()
+                foundBoard.getStoredFileName(),
+                multipartFile
         );
         foundBoard.setStoredFileName(updateFileResponse.getStoredFileName());
     }

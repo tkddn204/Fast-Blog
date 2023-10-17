@@ -111,12 +111,12 @@ class FileServiceTest {
         TEST_FILE_CONTENT_TYPE,
         new FileInputStream(testUpdateImageFile)
     );
-    UpdateFileDTO.Request updateRequest = UpdateFileDTO.Request.builder()
-        .multipartFile(mockUpdateMultipartFile)
-        .build();
 
     // when
-    UpdateFileDTO.Response response = fileService.updateFile(updateRequest);
+    UpdateFileDTO.Response response = fileService.updateFile(
+            testUpdateFileName,
+            mockUpdateMultipartFile
+    );
     FileResponseDTO getUpdatedFileResponse = fileService.getFile(response.getStoredFileName());
 
     // then

@@ -59,18 +59,14 @@ public class FileService {
   }
 
   @Transactional
-  public UpdateFileDTO.Response updateFile(UpdateFileDTO.Request request) {
-    String originalFileName = Objects.requireNonNull(
-        request.getMultipartFile().getOriginalFilename()
-    );
-    Optional<FileEntity> entity = fileRepository.findByStoredFileName(
-        request.getStoredFileName()
-    );
+  public UpdateFileDTO.Response updateFile(String storedFileName, MultipartFile multipartFile) {
+    String originalFileName = Objects.requireNonNull(multipartFile.getOriginalFilename());
+    Optional<FileEntity> entity = fileRepository.findByStoredFileName(storedFileName);
 
     // 없는 파일을 수정할 경우
     if (entity.isEmpty()) {
       // 파일 저장 후 결과 반환
-      FileResponseDTO fileResponse = saveFile(request.getMultipartFile());
+      FileResponseDTO fileResponse = saveFile(multipartFile);
       FileEntity newFileEntity = FileEntity.builder()
           .storedFileName(fileResponse.storedFileName())
           .originFileName(originalFileName)
@@ -83,8 +79,8 @@ public class FileService {
     // 파일 삭제 후 다시 저장
     String fileFullPath = entity.get().getFilePath();
     deleteToFileSystem(fileFullPath);
-    saveToFileSystem(request.getMultipartFile(), fileFullPath);
-    entity.get().setOriginFileName(request.getMultipartFile().getOriginalFilename());
+    saveToFileSystem(multipartFile, fileFullPath);
+    entity.get().setOriginFileName(multipartFile.getOriginalFilename());
 
     return UpdateFileDTO.Response.from(entity.get());
   }
