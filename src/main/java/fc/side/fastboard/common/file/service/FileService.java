@@ -59,7 +59,7 @@ public class FileService {
   }
 
   @Transactional
-  public UpdateFileDTO.Response updateFile(String storedFileName, MultipartFile multipartFile) {
+  public FileResponseDTO updateFile(String storedFileName, MultipartFile multipartFile) {
     String originalFileName = Objects.requireNonNull(multipartFile.getOriginalFilename());
     Optional<FileEntity> entity = fileRepository.findByStoredFileName(storedFileName);
 
@@ -72,7 +72,7 @@ public class FileService {
           .originFileName(originalFileName)
           .filePath(fileResponse.filePath())
           .build();
-      return UpdateFileDTO.Response.from(newFileEntity);
+      return FileResponseDTO.fromEntity(newFileEntity);
     }
 
     // 업데이트
@@ -82,7 +82,7 @@ public class FileService {
     saveToFileSystem(multipartFile, fileFullPath);
     entity.get().setOriginFileName(multipartFile.getOriginalFilename());
 
-    return UpdateFileDTO.Response.from(entity.get());
+    return FileResponseDTO.fromEntity(entity.get());
   }
 
   @Transactional

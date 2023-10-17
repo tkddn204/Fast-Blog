@@ -99,11 +99,11 @@ public class BoardService {
     }
 
     private void updateImageFile(MultipartFile multipartFile, Board foundBoard) {
-        UpdateFileDTO.Response updateFileResponse = fileService.updateFile(
+        FileResponseDTO updateFileResponse = fileService.updateFile(
                 foundBoard.getStoredFileName(),
                 multipartFile
         );
-        foundBoard.setStoredFileName(updateFileResponse.getStoredFileName());
+        foundBoard.setStoredFileName(updateFileResponse.storedFileName());
     }
 
     @Transactional

@@ -113,19 +113,19 @@ class FileServiceTest {
     );
 
     // when
-    UpdateFileDTO.Response response = fileService.updateFile(
+    FileResponseDTO fileResponse = fileService.updateFile(
             testUpdateFileName,
             mockUpdateMultipartFile
     );
-    FileResponseDTO getUpdatedFileResponse = fileService.getFile(response.getStoredFileName());
+    FileResponseDTO getUpdatedFileResponse = fileService.getFile(fileResponse.storedFileName());
 
     // then
     File actualFile = new File(getUpdatedFileResponse.filePath());
     actualFile.deleteOnExit();
-    assertEquals(response.getStoredFileName(), getUpdatedFileResponse.storedFileName());
+    assertEquals(fileResponse.storedFileName(), getUpdatedFileResponse.storedFileName());
     assertEquals(testUpdateFileName, getUpdatedFileResponse.originFileName());
     assertTrue(Files.isSameFile(
-        Path.of(response.getFilePath()), Path.of(actualFile.getPath())
+        Path.of(fileResponse.filePath()), Path.of(actualFile.getPath())
     ));
   }
 
