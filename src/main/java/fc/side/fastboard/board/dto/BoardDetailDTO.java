@@ -8,9 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Data
@@ -35,7 +39,10 @@ public class BoardDetailDTO {
             .writerName(board.getUser().getUsername())
             .title(board.getTitle())
             .content(board.getContent())
-            .comments(board.getComments().stream()
+            .comments(
+                    Optional.ofNullable(board.getComments())
+                    .orElseGet(Collections::emptyList)
+                    .stream()
                     .map(CommentDetailDTO::fromEntity).collect(Collectors.toList())
             )
             .createdAt(board.getCreatedAt())
@@ -50,6 +57,12 @@ public static BoardDetailDTO fromEntity(Board board, String originFileName, Stri
         .originFileName(originFileName)
         .storedFileName(storedFileName)
         .content(board.getContent())
+        .comments(
+                Optional.ofNullable(board.getComments())
+                        .orElseGet(Collections::emptyList)
+                        .stream()
+                        .map(CommentDetailDTO::fromEntity).collect(Collectors.toList())
+        )
         .createdAt(board.getCreatedAt())
         .hit(board.getHit())
         .build();

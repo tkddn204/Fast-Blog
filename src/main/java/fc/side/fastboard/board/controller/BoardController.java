@@ -53,6 +53,8 @@ public class BoardController {
     BoardDetailDTO findBoard = boardService.findBoardById(boardId);
     model.addAttribute("board", findBoard);
     model.addAttribute("userEmail", principal.getName());
+    log.info("TAG:Board={}", findBoard);
+    log.info("TAG:Comments={}", findBoard.getComments());
     return "board/detailForm";
   }
 
