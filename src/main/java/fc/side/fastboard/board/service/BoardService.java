@@ -6,10 +6,7 @@ import fc.side.fastboard.board.dto.EditBoardDTO;
 import fc.side.fastboard.board.entity.Board;
 import fc.side.fastboard.board.repository.BoardRepository;
 import fc.side.fastboard.common.exception.BoardException;
-import fc.side.fastboard.common.file.dto.DeleteFileDTO;
-import fc.side.fastboard.common.file.dto.GetFileDTO;
-import fc.side.fastboard.common.file.dto.SaveFileDTO;
-import fc.side.fastboard.common.file.dto.UpdateFileDTO;
+import fc.side.fastboard.common.file.dto.*;
 import fc.side.fastboard.common.file.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,8 +40,8 @@ public class BoardService {
     public BoardDetailDTO findBoardById(int id) {
         Board board = getBoardById(id);
         if (board.getStoredFileName() != null) {
-            GetFileDTO.Response response = fileService.getFile(board.getStoredFileName());
-            return BoardDetailDTO.fromEntity(board, response.getOriginFileName(), response.getStoredFileName());
+            GetFileResponse response = fileService.getFile(board.getStoredFileName());
+            return BoardDetailDTO.fromEntity(board, response.originFileName(), response.storedFileName());
         } else {
             return BoardDetailDTO.fromEntity(board);
         }

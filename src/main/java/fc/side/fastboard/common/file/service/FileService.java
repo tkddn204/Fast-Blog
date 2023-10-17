@@ -1,9 +1,6 @@
 package fc.side.fastboard.common.file.service;
 
-import fc.side.fastboard.common.file.dto.DeleteFileDTO;
-import fc.side.fastboard.common.file.dto.GetFileDTO;
-import fc.side.fastboard.common.file.dto.SaveFileDTO;
-import fc.side.fastboard.common.file.dto.UpdateFileDTO;
+import fc.side.fastboard.common.file.dto.*;
 import fc.side.fastboard.common.file.entity.FileEntity;
 import fc.side.fastboard.common.file.exception.FileDeleteException;
 import fc.side.fastboard.common.file.exception.FileNotFoundException;
@@ -31,9 +28,9 @@ public class FileService {
 
   private final FileRepository fileRepository;
 
-  public GetFileDTO.Response getFile(String storedFileName) {
+  public GetFileResponse getFile(String storedFileName) {
     return fileRepository.findByStoredFileName(storedFileName)
-        .map(GetFileDTO.Response::fromEntity)
+        .map(GetFileResponse::fromEntity)
         .orElseThrow(FileNotFoundException::new);
   }
 

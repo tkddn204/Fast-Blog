@@ -24,6 +24,6 @@ public class FileController {
     public Resource getImage(
             @PathVariable("storedFileName") String storedFileName
     ) throws MalformedURLException {
-        return new UrlResource("file:" + fileService.getFile(storedFileName).getFilePath());
+        return new UrlResource("file:" + fileService.getFile(storedFileName).filePath());
     }
 }

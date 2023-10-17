@@ -1,9 +1,6 @@
 package fc.side.fastboard.common.file.service;
 
-import fc.side.fastboard.common.file.dto.DeleteFileDTO;
-import fc.side.fastboard.common.file.dto.GetFileDTO;
-import fc.side.fastboard.common.file.dto.SaveFileDTO;
-import fc.side.fastboard.common.file.dto.UpdateFileDTO;
+import fc.side.fastboard.common.file.dto.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,15 +80,15 @@ class FileServiceTest {
     SaveFileDTO.Response saveResponse = fileService.saveFile(saveRequest);
 
     // when
-    GetFileDTO.Response response = fileService.getFile(saveResponse.getStoredFileName());
+    GetFileResponse response = fileService.getFile(saveResponse.getStoredFileName());
 
     // then
-    File actualFile = new File(response.getFilePath());
+    File actualFile = new File(response.filePath());
     actualFile.deleteOnExit();
-    assertEquals(saveResponse.getStoredFileName(), response.getStoredFileName());
-    assertEquals(testFileName, response.getOriginFileName());
+    assertEquals(saveResponse.getStoredFileName(), response.storedFileName());
+    assertEquals(testFileName, response.originFileName());
     assertTrue(Files.isSameFile(
-        Path.of(response.getFilePath()), Path.of(actualFile.getPath())
+        Path.of(response.filePath()), Path.of(actualFile.getPath())
     ));
   }
 
@@ -129,13 +126,13 @@ class FileServiceTest {
 
     // when
     UpdateFileDTO.Response response = fileService.updateFile(updateRequest);
-    GetFileDTO.Response getUpdatedFileResponse = fileService.getFile(response.getStoredFileName());
+    GetFileResponse getUpdatedFileResponse = fileService.getFile(response.getStoredFileName());
 
     // then
-    File actualFile = new File(getUpdatedFileResponse.getFilePath());
+    File actualFile = new File(getUpdatedFileResponse.filePath());
     actualFile.deleteOnExit();
-    assertEquals(response.getStoredFileName(), getUpdatedFileResponse.getStoredFileName());
-    assertEquals(testUpdateFileName, getUpdatedFileResponse.getOriginFileName());
+    assertEquals(response.getStoredFileName(), getUpdatedFileResponse.storedFileName());
+    assertEquals(testUpdateFileName, getUpdatedFileResponse.originFileName());
     assertTrue(Files.isSameFile(
         Path.of(response.getFilePath()), Path.of(actualFile.getPath())
     ));
