@@ -7,13 +7,13 @@ import lombok.*;
 
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public record GetFileResponse(
+public record FileResponseDTO(
         String storedFileName,
         String originFileName,
         String filePath
 ) {
-    public static GetFileResponse fromEntity(FileEntity fileEntity) {
-        return GetFileResponse.builder()
+    public static FileResponseDTO fromEntity(FileEntity fileEntity) {
+        return FileResponseDTO.builder()
                 .storedFileName(fileEntity.getStoredFileName())
                 .originFileName(fileEntity.getOriginFileName())
                 .filePath(fileEntity.getFilePath())

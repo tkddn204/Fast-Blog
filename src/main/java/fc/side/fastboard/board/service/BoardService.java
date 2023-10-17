@@ -40,7 +40,7 @@ public class BoardService {
     public BoardDetailDTO findBoardById(int id) {
         Board board = getBoardById(id);
         if (board.getStoredFileName() != null) {
-            GetFileResponse response = fileService.getFile(board.getStoredFileName());
+            FileResponseDTO response = fileService.getFile(board.getStoredFileName());
             return BoardDetailDTO.fromEntity(board, response.originFileName(), response.storedFileName());
         } else {
             return BoardDetailDTO.fromEntity(board);
@@ -57,12 +57,12 @@ public class BoardService {
 
             return BoardDetailDTO.fromEntity(newBoard);
         } else {
-            SaveFileDTO.Response response = fileService.saveFile(boardDto.getFile());
+            FileResponseDTO fileResponse = fileService.saveFile(boardDto.getFile());
             Board newBoard = Optional.of(boardDto)
-                    .map(dto -> CreateBoardDTO.toEntity(dto, response.getStoredFileName()))
+                    .map(dto -> CreateBoardDTO.toEntity(dto, fileResponse.storedFileName()))
                     .map(boardRepository::save)
                     .orElseThrow(() -> new BoardException(CANNOT_SAVE_BOARD));
-            return BoardDetailDTO.fromEntity(newBoard, response.getOriginalFileName(), response.getStoredFileName());
+            return BoardDetailDTO.fromEntity(newBoard, fileResponse.originFileName(), fileResponse.storedFileName());
         }
     }
 

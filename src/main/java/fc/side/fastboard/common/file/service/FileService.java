@@ -28,14 +28,14 @@ public class FileService {
 
   private final FileRepository fileRepository;
 
-  public GetFileResponse getFile(String storedFileName) {
+  public FileResponseDTO getFile(String storedFileName) {
     return fileRepository.findByStoredFileName(storedFileName)
-        .map(GetFileResponse::fromEntity)
+        .map(FileResponseDTO::fromEntity)
         .orElseThrow(FileNotFoundException::new);
   }
 
   @Transactional
-  public SaveFileDTO.Response saveFile(MultipartFile multipartFile) {
+  public FileResponseDTO saveFile(MultipartFile multipartFile) {
     String originalFileName = Objects.requireNonNull(
         multipartFile.getOriginalFilename()
     );
@@ -55,7 +55,7 @@ public class FileService {
         .build();
     fileRepository.save(fileEntity);
 
-    return SaveFileDTO.Response.from(fileEntity);
+    return FileResponseDTO.fromEntity(fileEntity);
   }
 
   @Transactional
@@ -70,11 +70,11 @@ public class FileService {
     // 없는 파일을 수정할 경우
     if (entity.isEmpty()) {
       // 파일 저장 후 결과 반환
-      SaveFileDTO.Response response = saveFile(request.getMultipartFile());
+      FileResponseDTO fileResponse = saveFile(request.getMultipartFile());
       FileEntity newFileEntity = FileEntity.builder()
-          .storedFileName(response.getStoredFileName())
+          .storedFileName(fileResponse.storedFileName())
           .originFileName(originalFileName)
-          .filePath(response.getFilePath())
+          .filePath(fileResponse.filePath())
           .build();
       return UpdateFileDTO.Response.from(newFileEntity);
     }

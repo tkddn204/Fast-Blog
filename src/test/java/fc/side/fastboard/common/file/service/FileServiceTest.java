@@ -49,13 +49,13 @@ class FileServiceTest {
     );
 
     // when
-    SaveFileDTO.Response response = fileService.saveFile(mockMultipartFile);
+    FileResponseDTO fileResponse = fileService.saveFile(mockMultipartFile);
 
     // then
-    File actualFile = new File(response.getFilePath());
+    File actualFile = new File(fileResponse.filePath());
     actualFile.deleteOnExit();
     assertTrue(Files.isSameFile(
-        Path.of(response.getFilePath()), Path.of(actualFile.getPath())
+        Path.of(fileResponse.filePath()), Path.of(actualFile.getPath())
     ));
   }
 
@@ -71,15 +71,15 @@ class FileServiceTest {
         TEST_FILE_CONTENT_TYPE,
         new FileInputStream(testImageFile)
     );
-    SaveFileDTO.Response saveResponse = fileService.saveFile(mockMultipartFile);
+    FileResponseDTO saveResponse = fileService.saveFile(mockMultipartFile);
 
     // when
-    GetFileResponse response = fileService.getFile(saveResponse.getStoredFileName());
+    FileResponseDTO response = fileService.getFile(saveResponse.storedFileName());
 
     // then
     File actualFile = new File(response.filePath());
     actualFile.deleteOnExit();
-    assertEquals(saveResponse.getStoredFileName(), response.storedFileName());
+    assertEquals(saveResponse.storedFileName(), response.storedFileName());
     assertEquals(testFileName, response.originFileName());
     assertTrue(Files.isSameFile(
         Path.of(response.filePath()), Path.of(actualFile.getPath())
@@ -117,7 +117,7 @@ class FileServiceTest {
 
     // when
     UpdateFileDTO.Response response = fileService.updateFile(updateRequest);
-    GetFileResponse getUpdatedFileResponse = fileService.getFile(response.getStoredFileName());
+    FileResponseDTO getUpdatedFileResponse = fileService.getFile(response.getStoredFileName());
 
     // then
     File actualFile = new File(getUpdatedFileResponse.filePath());
@@ -143,10 +143,10 @@ class FileServiceTest {
         TEST_FILE_CONTENT_TYPE,
         new FileInputStream(testImageFile)
     );
-    SaveFileDTO.Response saveResponse = fileService.saveFile(mockMultipartFile);
+    FileResponseDTO saveResponse = fileService.saveFile(mockMultipartFile);
 
     // 5번 파일의 storedFileName을 받아온다
-    String fileName = saveResponse.getStoredFileName();
+    String fileName = saveResponse.storedFileName();
     DeleteFileDTO.Request request = DeleteFileDTO.Request.builder()
         .storedFileName(fileName)
         .build();
