@@ -15,10 +15,15 @@
                         <header class="mb-4">
                             <!-- Post title-->
                             <h1 class="fw-bolder mb-1" th:text="${board.title}">This is title</h1>
+                            <div class="d-inline p-2" th:text="'작성자 : ' + ${board.getWriterName()}">작성자 이름</div>
+                            <div class="d-inline p-2"
+                                 th:text="'작성 일자 : ' + ${#temporals.format(board.getCreatedAt(),'yyyy-MM-dd HH:mm')}">작성 일자</div>
                             <!-- Post categories-->
                         </header>
                         <!-- Preview image figure-->
-                        <figure class="mb-4"><img class="img-fluid rounded" src="https://dummyimage.com/900x400/ced4da/6c757d.jpg" alt="..." /></figure>
+                        <figure class="mb-4" th:if="${board.getStoredFileName ne null}">
+                            <img class="img-fluid rounded" th:src="|/images/${board.getStoredFileName()}|" alt="" />
+                        </figure>
                         <!-- Post content-->
                         <section class="mb-5">
                             <p class="fs-5 mb-4" th:text="${board.content}">This is content</p>
@@ -28,43 +33,34 @@
                         <button class="btn btn-primary btn-sm" th:attr="onclick=|onClickEdit(${board.id})|">글 수정</button>
                         <button class="btn btn-danger btn-sm" th:attr="onclick=|onClickDelete(${board.id})|">글 삭제</button>
                     </section>
+
                     <!-- Comments section-->
                     <section class="mb-5">
                         <div class="card bg-light">
                             <div class="card-body">
                                 <!-- Comment form-->
-                                <form class="mb-4"><textarea class="form-control" rows="3" placeholder="Join the discussion and leave a comment!"></textarea></form>
-                                <!-- Comment with nested comments-->
-                                <div class="d-flex mb-4">
-                                    <!-- Parent comment-->
-                                    <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                    <div class="ms-3">
-                                        <div class="fw-bold">Commenter Name</div>
-                                        If you're going to lead a space frontier, it has to be government; it'll never be private enterprise. Because the space frontier is dangerous, and it's expensive, and it has unquantified risks.
-                                        <!-- Child comment 1-->
-                                        <div class="d-flex mt-4">
-                                            <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
+                                <form class="mb-4" th:action="@{'/board/' + ${board.id} + '/comment'}" method="post" th:if="${userEmail ne null}">
+                                    <textarea class="form-control" name="content" id="content" type="text" rows="3" placeholder="댓글 작성..."></textarea>
+                                    <button type="submit" class="btn btn-outline-dark btn-sm my-1">댓글 저장</button>
+                                </form>
+                                <!--comments-->
+                                <div th:each="comment : ${board.comments}">
+                                    <div class="d-flex">
+                                        <div class="d-flex mb-4 flex-fill">
+                                            <!--comment-->
+                                            <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50m/ced4da/6c757d.jpg" alt="..." /></div>
                                             <div class="ms-3">
-                                                <div class="fw-bold">Commenter Name</div>
-                                                And under those conditions, you cannot establish a capital-market evaluation of that enterprise. You can't get investors.
+                                                <div class="d-flex">
+                                                    <div class="me-3 fw-bold" th:text="${comment.writerName}">작성자</div>
+                                                    <div class="fw-lighter" th:text="${#temporals.format(comment.getCreatedAt(),'yyyy-MM-dd HH:mm')}">작성 일자</div>
+                                                </div>
+                                                <p class="card-text" th:text="${comment.content}">댓글 내용</p>
                                             </div>
                                         </div>
-                                        <!-- Child comment 2-->
-                                        <div class="d-flex mt-4">
-                                            <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                            <div class="ms-3">
-                                                <div class="fw-bold">Commenter Name</div>
-                                                When you put money directly to a problem, it makes a good headline.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Single comment-->
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                                    <div class="ms-3">
-                                        <div class="fw-bold">Commenter Name</div>
-                                        When I look at the universe and all the ways the universe wants to kill us, I find it hard to reconcile that with statements of beneficence.
+                                        <form class="md-5 my-3" th:action="@{'/board/' + ${board.id} + '/comment/' + ${comment.id}}" th:if="${comment.writerEmail eq userEmail}" >
+<!--                                            <button type="button" class="btn btn-primary btn-sm">수정</button>-->
+                                            <button type="submit" class="btn btn-secondary btn-sm">삭제</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

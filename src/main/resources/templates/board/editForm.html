@@ -11,23 +11,25 @@
             <div class="col-lg-12">
                 <!-- Post content-->
                 <header class="mb-4">
-                    <h1 class="fw-bolder mb-1">글 작성</h1>
+                    <h1 class="fw-bolder mb-1">글 수정</h1>
                 </header>
-                <form th:action method="post" th:object="${board}" enctype="multipart/form-data">
+                <form action="" th:action method="post" th:object="${board}" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label class="form-label" for="title">글 제목</label>
-                        <input class="form-control" id="title" type="text"
-                               th:field="*{title}"
+                        <input class="form-control" id="title"
+                               th:id="title" th:name="title"
                                th:errorclass="field-error"
-                               placeholder="제목을 입력하세요.">
+                               placeholder="제목을 입력하세요."
+                               th:value="${originBoard?.title}">
                         <div class="text-danger" th:errors="*{title}">제목 검증 오류</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="content">글 내용</label>
-                        <textarea class="form-control" id="content" rows="3"
-                                  th:field="*{content}"
+                        <textarea class="form-control" rows="3" id="content"
+                                  th:id="content" th:name="content"
                                   th:errorclass="field-error"
-                                  placeholder="내용을 입력하세요.">
+                                  placeholder="내용을 입력하세요."
+                                  th:text="${originBoard?.content}">
                         </textarea>
                         <div class="text-danger" th:errors="*{content}">내용 검증 오류</div>
                     </div>
@@ -38,13 +40,17 @@
                                 <label class="btn-file-select btn btn-outline-secondary" for="file">파일 선택</label>
                                 <button type="button" class="btn-file-delete btn btn-danger" onclick="onClickDeleteFile()">삭제</button>
                             </div>
-                            <span class="btn-file-select-text input-group-text"></span>
+                            <label class="btn-file-select-text input-group-text"
+                                   for="file"
+                                   th:text="${originBoard?.originFileName}"></label>
                             <input class="form-control custom-file-input" name="file"
                                    th:field="*{file}"
                                    th:errorclass="field-error"
                                    onchange="onChangeFileInput(this)"
                                    type="file"
                                    id="file">
+                            <input type="hidden" name="fileName" id="fileName"
+                                th:value="${originBoard?.storedFileName}">
                         </div>
                     </div>
                     <div class="mb-3">
@@ -56,19 +62,30 @@
         </div>
     </div>
 </div>
+
 <th:block layout:fragment="script">
     <script type="text/javascript">
         const fileDeleteButton = document.querySelector(".btn-file-delete");
         const fileSelectButton = document.querySelector(".btn-file-select");
         const fileSelectText = document.querySelector(".btn-file-select-text");
+        const fileInputElement = document.querySelector("#file");
+        const fileSelectHiddenName = document.querySelector("#fileName");
+
+        function init() {
+            const originFileName = fileSelectText.textContent;
+            onChangeFileInput(fileSelectHiddenName);
+            fileSelectText.textContent = originFileName;
+        }
+
         function onChangeFileInput(fileInputElement) {
             const value = fileInputElement.value;
+            console.log(value);
             if (value) {
                 fileDeleteButton.classList.remove('btn-file-delete');
                 fileSelectButton.style.display = 'none';
             } else {
-                fileDeleteButton.classList.add('btn-file-delete');
                 fileSelectButton.style.display = 'block';
+                fileDeleteButton.classList.add('btn-file-delete');
             }
             fileSelectText.textContent = value;
             fileSelectHiddenName.value = value;
@@ -76,11 +93,12 @@
 
         function onClickDeleteFile() {
             if (confirm("파일을 삭제하시겠습니까?")) {
-                const fileInputElement = document.querySelector("#file");
                 fileInputElement.value = "";
                 onChangeFileInput(fileInputElement);
             }
         }
+
+        init();
     </script>
 </th:block>
 </body>

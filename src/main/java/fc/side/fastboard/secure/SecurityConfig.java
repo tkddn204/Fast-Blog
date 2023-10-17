@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .requestMatchers(new AntPathRequestMatcher("/js/**"))
                 .requestMatchers(new AntPathRequestMatcher("/img/**"))
                 .requestMatchers(new AntPathRequestMatcher("/lib/**"))
+                .requestMatchers(new AntPathRequestMatcher("/images/**"))
                 .requestMatchers(new AntPathRequestMatcher("/error"));
     }
 

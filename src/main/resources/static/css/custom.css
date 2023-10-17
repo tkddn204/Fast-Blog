@@ -1,0 +1,12 @@
+.field-error {
+    border-bottom-color: #0a53be;
+}
+.btn-file-delete {
+    display: none;
+}
+.custom-file-input {
+    display: none;
+}
+.custom-file-input::-webkit-file-upload-button {
+    display: none;
+}
