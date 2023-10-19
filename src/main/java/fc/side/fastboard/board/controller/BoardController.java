@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -42,42 +44,47 @@ public class BoardController {
         return "index-temp";
     }
 
-    @GetMapping("/board/{boardId}")
-    public String getBoard(
-            @PathVariable Integer boardId,
-            Model model
-    ) {
-        BoardDetailDTO findBoard = boardService.findBoardById(boardId);
-        model.addAttribute("board", findBoard);
-        return "board/detailForm";
-    }
+  @GetMapping("/board/{boardId}")
+  public String getBoard(
+      @PathVariable Long boardId,
+      Model model,
+      Principal principal
+  ) {
+    BoardDetailDTO findBoard = boardService.findBoardById(boardId);
+    model.addAttribute("board", findBoard);
+    model.addAttribute("userEmail", principal.getName());
+    log.info("TAG:Board={}", findBoard);
+    log.info("TAG:Comments={}", findBoard.getComments());
+    return "board/detailForm";
+  }
 
     @GetMapping("/board/addForm")
     public String addForm(@ModelAttribute("board") CreateBoardDTO createBoardDTO) {
         return "board/postForm";
     }
 
-    @PostMapping("/board/addForm")
-    public String addBoard(
-            @Validated
-            @ModelAttribute("board") CreateBoardDTO boardDto,
-            BindingResult bindingResult,  //ModelAttribute 뒤에 써야됩니다.
-            RedirectAttributes redirectAttributes
-    ) {
-        if (bindingResult.hasErrors()) {
-            log.info("validation-errors={}", bindingResult);
-            return "board/postForm";
-        }
-
-        BoardDetailDTO boardDetail = boardService.createBoard(boardDto);
-        redirectAttributes.addAttribute("id", boardDetail.getId());
-        redirectAttributes.addAttribute("status", true);
-        return "redirect:/board/" + boardDetail.getId();
+  @PostMapping("/board/addForm")
+  public String addBoard(
+      @Validated
+      @ModelAttribute("board") CreateBoardDTO boardDto,
+      BindingResult bindingResult,  //ModelAttribute 뒤에 써야됩니다.
+      RedirectAttributes redirectAttributes,
+      Principal principal
+  ) {
+    if(bindingResult.hasErrors()) {
+      log.info("validation-errors={}", bindingResult);
+      return "board/postForm";
     }
+
+    BoardDetailDTO boardDetail = boardService.createBoard(principal.getName(), boardDto);
+    redirectAttributes.addAttribute("id", boardDetail.getId());
+    redirectAttributes.addAttribute("status", true);
+    return "redirect:/board/" + boardDetail.getId();
+  }
 
     @GetMapping("/board/editForm/{boardId}")
     public String editForm(
-            @PathVariable Integer boardId,
+            @PathVariable Long boardId,
             @ModelAttribute("board") EditBoardDTO boardDto,
             Model model
     ) {
@@ -86,17 +93,17 @@ public class BoardController {
         return "board/editForm";
     }
 
-    @PostMapping("/board/editForm/{boardId}")
-    public String editBoard(
-            @PathVariable Integer boardId,
-            @Validated @ModelAttribute("board") EditBoardDTO boardDto,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes
-    ) {
-        if (bindingResult.hasErrors()) {
-            log.info("validation-errors={}", bindingResult);
-            return "board/editForm";
-        }
+  @PostMapping("/board/editForm/{boardId}")
+  public String editBoard(
+      @PathVariable Long boardId,
+      @Validated @ModelAttribute("board") EditBoardDTO boardDto,
+      BindingResult bindingResult,
+      RedirectAttributes redirectAttributes
+  ) {
+    if(bindingResult.hasErrors()) {
+      log.info("validation-errors={}", bindingResult);
+      return "board/editForm";
+    }
 
         boardService.editBoard(boardId, boardDto);
         redirectAttributes.addAttribute("status", true);
@@ -104,13 +111,13 @@ public class BoardController {
         return "redirect:/board/" + boardId;
     }
 
-    @GetMapping("/board/deleteForm/{boardId}")
-    public String deleteForm(
-            @PathVariable Integer boardId
-    ) {
-        boardService.deleteBoard(boardId);
-        return "redirect:/";
-    }
+  @GetMapping("/board/deleteForm/{boardId}")
+  public String deleteForm(
+      @PathVariable Long boardId
+  ) {
+    boardService.deleteBoard(boardId);
+    return "redirect:/";
+  }
 
 
     @GetMapping("/boards")

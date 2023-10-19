@@ -3,6 +3,7 @@ package fc.side.fastboard.board.dto;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import fc.side.fastboard.board.entity.Board;
+import fc.side.fastboard.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -18,9 +19,6 @@ import java.io.Serializable;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CreateBoardDTO implements Serializable {
 
-//    @NotNull
-    private Integer writerId;
-
     @NotBlank
     @Size(min = 3, max = 15)
     private String title;
@@ -30,17 +28,17 @@ public class CreateBoardDTO implements Serializable {
 
     private MultipartFile file;
 
-    public static Board toEntity(CreateBoardDTO boardDto) {
+    public static Board toEntity(CreateBoardDTO boardDto, User user) {
       return Board.builder()
-          .writerId(boardDto.getWriterId())
-          .title(boardDto.getTitle())
-          .content(boardDto.getContent())
-          .build();
+              .user(user)
+              .title(boardDto.getTitle())
+              .content(boardDto.getContent())
+              .build();
     }
 
-    public static Board toEntity(CreateBoardDTO boardDto, String fileName) {
+    public static Board toEntity(CreateBoardDTO boardDto, String fileName, User user) {
         return Board.builder()
-                .writerId(boardDto.getWriterId())
+                .user(user)
                 .title(boardDto.getTitle())
                 .content(boardDto.getContent())
                 .storedFileName(fileName)
